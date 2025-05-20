@@ -1,6 +1,6 @@
-import ButtonSubmit from "./form/Button"
-import InputField from "./form/InputField"
-import LinkToRegister from "./form/LinkToRegister";
+import ButtonSubmit from "../form/Button"
+import InputField from "../form/InputField"
+import LinkToRegister from "../form/LinkToRegister";
 const SignUp = ({ setIsLogin }) => {
 
      return (

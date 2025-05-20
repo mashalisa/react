@@ -1,9 +1,10 @@
 body {
    background-color: #f7f3ed;
+   color:black
 }
 #root {
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0rem;
   text-align: center;
 
 }
@@ -97,4 +98,22 @@ button:hover {
   font-weight: bold;
   margin-left: 0.25rem;
   cursor: pointer;
+}
+
+/* #sidebar */
+.page-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+
+}
+.sidebar{
+  background-color: #1e1e1e;
+}
+.mini-box {
+  padding: 1rem 2rem;
+ text-align: left;
+}
+.item a {
+ color:white;
 }

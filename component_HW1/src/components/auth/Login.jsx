@@ -1,8 +1,8 @@
-import ButtonSubmit from "./form/Button"
-import InputField from "./form/InputField"
-import LinkToRegister from "./form/LinkToRegister";
+import ButtonSubmit from "../form/Button"
+import InputField from "../form/InputField"
+import LinkToRegister from "../form/LinkToRegister";
 const Login = ({ setIsLogin }) => {
-    console.log('login')
+
      return (
     
     <div className="right">
