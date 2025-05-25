@@ -120,3 +120,13 @@ button:hover {
 .error-message {
   color: rgb(167, 20, 20);
 }
+
+.container-box{
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1rem;
+}

@@ -10,8 +10,7 @@ const User = sequelize.define('User', {
     },
     user_name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
     email: {
         type: DataTypes.STRING,
@@ -24,16 +23,10 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
     }
 }, {
+    tableName: 'users',
+    timestamps: true,
     hooks: {
         beforeCreate: async (user) => {
             if (user.password) {
@@ -54,12 +47,5 @@ const User = sequelize.define('User', {
 User.prototype.validatePassword = async function(password) {
     return bcrypt.compare(password, this.password);
 };
-
-sequelize.sync({ alter: true }).then(() => {
-    console.log('User table created!');
-})
-.catch((error) => {
-    console.error('Error syncing with DB:', error);
-});
 
 module.exports = User;

@@ -7,6 +7,11 @@ const userRoutes = require('./routers/userRouters');
 const authRoutes = require('./routers/authRouters');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./configDB/swagger');
+const budjetsRoutes = require('./routers/budjetsRoutes');
+const transactionsRoutes = require('./routers/transactionsRoutes');
+
+// Import models from index.js
+const { User, Budjets, Transaction } = require('./DB/models');
 
 const app = express();
 // Allow requests from your frontend
@@ -27,9 +32,18 @@ app.use((err, req, res, next) => {
 // Mount routes with /api prefix
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-
+app.use('/api/budjets', budjetsRoutes);
+app.use('/api/transactions', transactionsRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
+// Sync the database
+const sequelize = require('./configDB/sequelize');
+sequelize.sync({ alter: true }).then(() => {
+    console.log('Database synced!');
+}).catch((error) => {
+    console.error('Error syncing DB:', error);
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, (err) => {
