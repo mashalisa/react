@@ -1,5 +1,4 @@
 const express = require('express');
-
 // import cors from "cors";
 
 const cors = require('cors')
@@ -9,16 +8,17 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./configDB/swagger');
 const budjetsRoutes = require('./routers/budjetsRoutes');
 const transactionsRoutes = require('./routers/transactionsRoutes');
+const app = express();
+
+
+
+app.use(cors());
 
 // Import models from index.js
 const { User, Budjets, Transaction } = require('./DB/models');
 
-const app = express();
-// Allow requests from your frontend
-app.use(cors({
-  origin: "http://localhost:5173", // or "*" for public access (not recommended for production)
-  credentials: true,               // only if you're using cookies/auth headers
-}));
+
+
 
 // Middleware for parsing JSON bodies
 app.use(express.json());
@@ -37,22 +37,24 @@ app.use('/api/transactions', transactionsRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
+
+// ✅ Import sequelize from DB models (includes associations!)
+// const { sequelize } = require('./DB/models');
+
 // Sync the database
 const sequelize = require('./configDB/sequelize');
-sequelize.sync({ alter: true }).then(() => {
-    console.log('Database synced!');
-}).catch((error) => {
-    console.error('Error syncing DB:', error);
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, (err) => {
-    if (err) {
-        console.error('Error starting server:', err);
-        return;
-    }
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
-});
+// ✅ Sync DB using the correct instance
+sequelize.sync({ alter: true })
+    .then(() => {
+        console.log('✅ Database synced!');
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on http://localhost:${PORT}`);
+            console.log(`📘 Swagger docs available at http://localhost:${PORT}/api-docs`);
+        });
+    })
+    .catch((error) => {
+        console.error('❌ Error syncing DB:', error);
+    });
 
 module.exports = app;

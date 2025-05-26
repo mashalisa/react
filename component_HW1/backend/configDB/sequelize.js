@@ -49,4 +49,7 @@ const testConnection = async () => {
 // Execute the connection test
 testConnection();
 
+
+
+
 module.exports = sequelize; 
