@@ -4,37 +4,42 @@ const Budjets = require('./budjets');
 const Transaction = require('./transactions');
 
 // Define associations
-Budjets.hasMany(Transaction, { foreignKey: 'budjet_id' });
-Transaction.belongsTo(Budjets, { foreignKey: 'budjet_id' });
+Budjets.hasMany(Transaction, { 
+    foreignKey: 'budjet_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Transaction.belongsTo(Budjets, { 
+    foreignKey: 'budjet_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
 
 // Sync database
 const syncDatabase = async () => {
     try {
-        // Verify database connection
         await sequelize.authenticate();
         console.log('Database connection verified');
 
-        // Disable foreign key checks temporarily
+        // Disable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
 
-        // Sync all models with alter: true
-        await sequelize.sync({ alter: true });
-        console.log('All tables synchronized successfully');
+        // Sync tables individually to avoid rename issues
+        await User.sync({ alter: true, logging: false });
+        await Budjets.sync({ alter: true, logging: false });
+        await Transaction.sync({ alter: true, logging: false });
 
         // Re-enable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');
-    } catch (error) {
-        // Re-enable foreign key checks even if there's an error
-        try {
-            await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');
-        } catch (e) {
-            console.error('Error re-enabling foreign key checks:', e);
-        }
 
-        // Log the error but don't throw it
-        console.error('Error syncing database:', error.message);
-        if (error.parent) {
-            console.error('Parent error:', error.parent.message);
+        console.log('Database synchronized successfully');
+    } catch (error) {
+        // Ensure foreign key checks are re-enabled
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;').catch(console.error);
+        
+        // Log error if it's not about missing constraints
+        if (!error.message.includes('does not exist')) {
+            console.error('Error syncing database:', error.message);
         }
     }
 };
