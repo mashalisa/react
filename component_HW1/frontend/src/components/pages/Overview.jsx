@@ -1,6 +1,10 @@
 const Overview = ({page}) => {
+ console.log(page, 'page is active')
     return (
-        <h1> {page.label}</h1>
+        <>
+          
+        </>
+      
     )
      
 }

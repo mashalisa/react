@@ -1,4 +1,3 @@
-
 import { useState } from 'react'; //useState is a React Hook that lets you add a state variable to your component.
 //State: A Component's Memory
 //It stores dynamic data — things that can change while the app is running.
@@ -12,53 +11,68 @@ import RecurringBills from './components/pages/RecurringBills';
 import Transactions from './components/pages/Transactions';
 import Budgets from './components/pages/Budgets';
 import Pots from './components/pages/Pots';
-import AuthLayout from './components/auth/AuthLayout';
-
-
+import Login from './components/auth/Login';
+import SignUp from './components/auth/SignUp';
+import AuthImage from './components/auth/AuthImage';
+import { Route, useLocation } from "wouter";
+import { AuthContext } from './contexts/AuthContext';
+import { useEffect, useContext } from 'react';
+import Header from './components/layout/Header';
 function App() {
-  const [isLogin, setIsLogin] =  useState(false);
-
   const menu = [
-    { id: 'page1', label: 'overview' },
-    { id: 'page2', label: 'transactions' },
-    { id: 'page3', label: 'budgets' },
-    { id: 'page4', label: 'pots' },
-    { id: 'page5', label: 'recurring bills' }
-  ]
+    { id: 'page1', label: 'overview', path: '/', component: Overview, isButton: false },
+    { id: 'page2', label: 'transactions', path: '/transactions', component: Transactions, isButton: false },
+    { id: 'page3', label: 'budgets', path: '/budgets', component: Budgets, isButton: true },
+    { id: 'page4', label: 'pots', path: '/pots', component: Pots, isButton: true },
+    { id: 'page5', label: 'recurring bills', path: '/recurring-bills', component: RecurringBills, isButton: false }
+  ];
 
 
-  const [page, setPage] = useState(menu[0])
+  const {user}  = useContext(AuthContext)
+  const [_, navigate] = useLocation()
+  console.log(user, 'user in App')
+  useEffect(() => {
+    if(!user){
+      navigate('/Login')
+    }
+  }, [user])
 
-const renderPageComponent = (page) => {
-  switch (page.id) {
-    case 'page1':
-      return <Overview page={page} />;
-    case 'page2':
-      return <Transactions page={page} />;
-    case 'page3':
-      return <Budgets page={page} />;
-    case 'page4':
-      return <Pots page={page} />;
-    case 'page5':
-      return <RecurringBills page={page} />;
-    default:
-      return <div>Page not found</div>;
-  }
-};
-
-return (
-    <div>
-      {!isLogin ? (
-        <AuthLayout isLogin={isLogin} setIsLogin={setIsLogin} />
-      ) : (
-        <div className="page-container">
-          <SideBar setPage={setPage} menu={menu} activePage={page} />
-          <div className="content">
-            {renderPageComponent(page)}
-          </div>
+  
+  if (user ) {
+    return (
+      <div className="page-container">
+        <SideBar menu={menu} />
+        <div className="main-content">
+          {menu.map((item) => {
+            return (
+              <Route path={item.path} key={item.id}>
+                <>
+                <Header page={item} />
+                <item.component page={item.label} />
+                </>
+              
+              </Route>
+            );
+          })}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )
+  } else {
+    return (
+      <div className="container">
+        <AuthImage 
+          title="Keep track of your money and save for your future" 
+          text="Personal finance app puts you in control of your spending. Track transactions, set budgets, add to savings pots easily"
+        />
+        <Route path="/login">
+          <Login />
+        </Route>
+        <Route path="/signup">
+          <SignUp />
+        </Route>
+      </div>
+    )
+  }
 }
+
 export default App

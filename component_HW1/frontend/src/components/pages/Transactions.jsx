@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 
+
 async function getTransactions()  {
   
-    const response  = await fetch("http://localhost:3000/api/transactions",);
+    const response  = await fetch("https://react-p8qv.onrender.com/api/transactions",);
 
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
@@ -14,7 +15,8 @@ async function getTransactions()  {
     return result; 
 };
 
-const Transactions = () => {
+const Transactions = (page) => {
+  console.log( 'transactions', page)
     const [transactions, setTransactions] = useState([]);
     useEffect(() => {
         getTransactions()
@@ -23,6 +25,7 @@ const Transactions = () => {
       }, []);
     console.log(transactions, 'transactions');
     return (
+      
         <div>
           <table className='table'>
         <thead>

@@ -1,13 +1,14 @@
 // import ButtonSubmit from "../form/Button"
-import { useState } from "react";
+import { useState, useContext } from "react";
 import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
 import { useEffect } from 'react';
-
+import { AuthContext } from '../../contexts/AuthContext';
+import { useLocation } from "wouter";
 
 async function getLogin(formData)  {
-  
-    const response  = await fetch("http://localhost:3000/api/auth/login", {
+    console.log(formData, 'formData')
+    const response  = await fetch("https://react-p8qv.onrender.com/api/auth/login", {
       method: "POST",                      
       headers: {
         "Content-Type": "application/json",
@@ -26,30 +27,29 @@ async function getLogin(formData)  {
 };
 
 
-const Login = ({ setIsLogin, setIsLoginForm }) => {
+const Login = () => {
+
+
+  const { user,setUser } = useContext(AuthContext)
+  const [_, navigate] = useLocation()
 
 const [form, setForm] = useState({'email': "", "password": ''})
-const [user, setUser] = useState([])
 const [error, setError] = useState(false)
 
-useEffect(() => {
-  
-    console.log(user, 'user in useEffect');
- 
-}, [user]); 
+
 
   function handleLogin (e) {
     e.preventDefault();
-    console.log('setIsLogin', setIsLogin)
     console.log("email", form.email)
     console.log("password", form.password)
 
 
     getLogin(form).then(function(data){
-      setUser(data);
       console.log(data, 'data')
       console.log(user, 'user')
-          setIsLogin (true);
+      setUser(data)
+      console.log(user, 'user in handleLogin')
+      navigate('/')
     }).catch((error) => {
       console.error("Login error:", error.message);
       setError(error.message);
@@ -83,8 +83,9 @@ useEffect(() => {
 
         <LinkToRegister  
             text="need to create an account?" 
-            link = "Sing Up"  
-            setIsLoginForm={setIsLoginForm} />
+            link="Sign Up"  
+            
+        />
      </div>
     </div>
   

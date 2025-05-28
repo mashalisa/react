@@ -1,8 +1,8 @@
 import ButtonSubmit from "../form/Button"
 import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
-const SignUp = ({ setIsLogin, setIsLoginForm }) => {
-
+const SignUp = () => {
+  
      return (
     <div className="right">
       <div className="form-container">
@@ -10,11 +10,11 @@ const SignUp = ({ setIsLogin, setIsLoginForm }) => {
          <InputField name = "Name" type = "text"/>
         <InputField name = "Email" type = "email"/>
         <InputField name = "Create password" type = "password"/>
-        <ButtonSubmit   setIsLogin={setIsLogin} name="Create Account" />
+        <ButtonSubmit    name="Create Account" />
         <LinkToRegister
           text="Already have an account?"
           link="Login"
-          setIsLoginForm={setIsLoginForm}
+         
         />
      </div>
     </div>
