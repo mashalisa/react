@@ -1,39 +1,61 @@
-import { useEffect, useState } from "react";
-async function getLogin()  {
-  
-    const res = await fetch("http://localhost:3000/api/auth/login", {
-      method: "POST",                      // or 'GET', 'PUT', etc.
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),         // only needed for POST/PUT
-    });
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from '../../contexts/AuthContext';
+import { useLocation } from "wouter";
 
-    if (!res.ok) {
-      throw new Error(`Server error: ${res.status}`);
-    }
+async function getLogin(formData, url)  {
+  console.log(formData, 'formData')
+  console.log(url, 'url')
+  const response  = await fetch(url, {
+    method: "POST",                      
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),        
+  });
 
-    const result = await res.json(); 
-          // parse JSON response
-    return result; 
-};
-const  ButtonSubmit =  ( {name,setIsLogin}) => {
-  const [user, setUser] = useState([])
-
-  useEffect( ()=> {
-    console.log('useEffect')
-    getLogin().then(setUser)
-  }, [user])
-
-
-    const handleLogin = () => {
-    console.log('setIsLogin', setIsLogin)
-    // setIsLogin (true);
-    console.log('user', user)
+  if (!response.ok) {
+    throw new Error(`Server error: ${response.status}`);
+    
   }
+
+  const result = await response.json(); 
+        // parse JSON response
+  return result; 
+};
+
+const  ButtonSubmit =  ( {name, form, setError,path} ) => {
+
+
+ let url = "https://react-p8qv.onrender.com/api/auth" 
+
+if (path === "/Login") {
+  url = `${url}/login`
+} else {
+  url = `${url}/register`
+}
+const { user,setUser } = useContext(AuthContext)
+const [_, navigate] = useLocation()
+
+
+   
+  function handleClick (e) {
+    e.preventDefault();
+    getLogin(form, url).then(function(data){
+      console.log(data, 'data sent')
+      setUser(data)
+      console.log(data, 'data in handleLogin')
+      navigate('/')
+    }).catch((error) => {
+      console.error("Login error:", error.message);
+      setError(error.message);
+    });
+  
+   
+  }
+ 
   return (
       <>
-      <button onClick={handleLogin}>{name}</button>
+      <button type="submit" onClick={handleClick}>{name}</button>
       </>
   )
 }

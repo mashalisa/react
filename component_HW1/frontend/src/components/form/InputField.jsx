@@ -1,7 +1,7 @@
-const InputField = ({ name, type, value, onChange }) => {
+const InputField = ({ name, type, value, onChange, label_name }) => {
   return (
     <div>
-      <label htmlFor={name}>{name}</label>
+      <label htmlFor={name}>{label_name}</label>
       <input
         id={name}
         name={name}
