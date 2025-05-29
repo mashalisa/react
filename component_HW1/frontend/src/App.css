@@ -60,6 +60,7 @@ body {
   justify-content: center;
   align-items: center;
   color:black;
+  flex: 2;
 
 }
 .form-container {
@@ -68,12 +69,18 @@ body {
   border-radius: 1rem;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   width: 100%;
-  min-width: 620px;
+  max-width: 560px;
+  text-align: left;
 }
 .form-container h1 {
   margin-bottom: 2rem;
   font-size: 1.5rem;
     text-align: left;
+
+}
+.form-container form {
+  max-width: 496px;
+  width: 100%;
 }
 label {
   display: block;
@@ -88,7 +95,8 @@ input {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
-  max-width: 600px;
+
+
 }
 button {
   width: 100%;
@@ -113,7 +121,11 @@ button:hover {
   margin-left: 0.25rem;
   cursor: pointer;
 }
-
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 /* #sidebar */
 .page-container {
   display: flex;
@@ -182,4 +194,11 @@ button:hover {
   max-width: 154px;
   text-transform: capitalize;
   padding:1rem 0
+}
+
+/* card desing */
+.card {
+  background-color: white;
+  border-radius: 6px;
+  padding: 1rem;
 }

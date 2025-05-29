@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./configDB/swagger');
 const budjetsRoutes = require('./routers/budjetsRoutes');
 const transactionsRoutes = require('./routers/transactionsRoutes');
+const potsRoutes = require('./routers/potRouters');
 const app = express();
 
 
@@ -15,7 +16,7 @@ const app = express();
 app.use(cors());
 
 // Import models from index.js
-const { User, Budjets, Transaction } = require('./DB/models');
+const { User, Budjets, Transaction, Pot } = require('./DB/models');
 
 
 
@@ -32,8 +33,9 @@ app.use((err, req, res, next) => {
 // Mount routes with /api prefix
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/budjets', budjetsRoutes);
+app.use('/api/budgets', budjetsRoutes);
 app.use('/api/transactions', transactionsRoutes);
+app.use('/api/pots', potsRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
@@ -50,21 +52,7 @@ const syncDatabase = async () => {
         // First, disable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
 
-        // Get all indexes for the users table
-        const [indexes] = await sequelize.query(`
-            SELECT INDEX_NAME 
-            FROM INFORMATION_SCHEMA.STATISTICS 
-            WHERE TABLE_SCHEMA = DATABASE() 
-            AND TABLE_NAME = 'users' 
-            AND INDEX_NAME != 'PRIMARY';
-        `);
-
-        // Drop all non-primary indexes
-        for (const index of indexes) {
-            await sequelize.query(`ALTER TABLE users DROP INDEX ${index.INDEX_NAME};`);
-        }
-
-        // Now sync with alter: true to add only the necessary indexes
+        // Sync with alter: true to update table structures
         await sequelize.sync({ alter: true });
 
         // Re-enable foreign key checks

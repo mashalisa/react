@@ -20,8 +20,12 @@ const sequelize = new Sequelize('sql7780500', 'sql7780500', '8YIKyA4Gez', {
     dialectOptions: {
         connectTimeout: 60000,
         multipleStatements: true,
-        // Add proper MySQL charset settings
-        charset: 'utf8mb4'
+        charset: 'utf8mb4',
+        // Add these options to handle the engine version warning
+        supportBigNumbers: true,
+        bigNumberStrings: true,
+        dateStrings: true,
+        typeCast: true
     }
 });
 
@@ -48,8 +52,5 @@ const testConnection = async () => {
 
 // Execute the connection test
 testConnection();
-
-
-
 
 module.exports = sequelize; 

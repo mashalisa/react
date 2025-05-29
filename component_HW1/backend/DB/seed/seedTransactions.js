@@ -1,5 +1,5 @@
-const sequelize = require('../configDB/sequelize');
-const { Transaction, Budjets } = require('../DB/models');
+const sequelize = require('../../configDB/sequelize');
+const { Transaction, Budjets } = require('../../DB/models');
 const { v4: uuidv4 } = require('uuid');
 
 function getRandomCategory() {

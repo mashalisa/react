@@ -1,4 +1,4 @@
-const { Budjets } = require('../DB/models');
+const { Budjets } = require('../../DB/models');
 const { v4: uuidv4 } = require('uuid');
 
 const seedBudgets = async () => {
@@ -16,5 +16,4 @@ const seedBudgets = async () => {
     }
 };
 
-// Execute the seeder
-seedBudgets(); 
+module.exports = seedBudgets; 
