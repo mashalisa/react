@@ -41,26 +41,20 @@ function potsController() {
                             });
                         }
                         result = await vaultServices[method](userId);
-                    }
+                        return res.status(200).json({
+                            success: true,
+                            data: result,
+                            message: result && result.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found'
+                        });
+                    } 
                     
-                    console.log('Controller: Result from service:', result);
-                    return res.status(200).json({
-                        success: true,
-                        data: result,
-                        message: result && result.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found'
-                    });
-                  
+                 
+                
                 } catch (error) {
-                    console.error('Controller Error Details:', {
-                        method,
-                        error: error.message,
-                        stack: error.stack,
-                        status: error.status
-                    });
+                    console.error(`Error in ${method}:`, error);
                     res.status(error.status || 500).json({
                         success: false,
-                        message: error.message || 'Internal Server Error',
-                        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+                        message: error.message || 'Internal Server Error'
                     });
                 }
             };

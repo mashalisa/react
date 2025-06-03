@@ -162,13 +162,22 @@ button:hover {
   padding: 1rem 0;
   padding-left: 2rem;
   max-width: 80%;
-
+  display: flex;
+  align-items: center;
 }
 .sidebar a.active {
   background-color: #F8F4F0;
   color: black;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
+}
+
+/* Add styles for SVG in active state */
+.sidebar a.active img {
+  filter: invert(43%) sepia(8%) saturate(3491%) hue-rotate(128deg) brightness(90%) contrast(80%);/* This will make the SVG black when active */
+}
+.sidebar span {
+  padding-left: 1rem;
 }
 .error-message {
   color: rgb(167, 20, 20);

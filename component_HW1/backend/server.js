@@ -48,6 +48,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 // Sync the database
 const sequelize = require('./configDB/sequelize');
 
+// Force sync database (this will drop and recreate tables)
+sequelize.sync({ alter: true }).then(() => {
+    console.log('Database synced successfully');
+}).catch(err => {
+    console.error('Error syncing database:', err);
+});
+
 // Function to safely sync database
 const syncDatabase = async () => {
     try {

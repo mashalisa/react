@@ -5,6 +5,7 @@ import { Link, Route, useLocation } from "wouter";
 
 
 const SideBar = ({  menu  }) => {
+
   console.log (menu)
   return (
    
@@ -14,7 +15,7 @@ const SideBar = ({  menu  }) => {
         // const pageName = Object.values(navItem)[0];
         console.log(navItem)
         return (
-          <Link key={navItem.id} href={navItem.path} className={(active) => (active ? "active" : "")}>{navItem.label}</Link>
+          <Link key={navItem.id} href={navItem.path} className={(active) => (active ? "active" : "")}><img  src={navItem.svg_path} alt={navItem.label} /><span>{navItem.label}</span></Link>
           
         );
       })}

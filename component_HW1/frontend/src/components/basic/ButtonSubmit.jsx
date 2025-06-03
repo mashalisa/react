@@ -1,5 +1,27 @@
 const urlPot = "https://react-p8qv.onrender.com/api/pots"
 
+
+async function getLogin(formData, url)  {
+    console.log(formData, 'formData')
+    console.log(url, 'url')
+    const response  = await fetch(url, {
+      method: "POST",                      
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),        
+    });
+  
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+      
+    }
+  
+    const result = await response.json(); 
+          // parse JSON response
+    return result; 
+  };
+
 async function addMoney(potId, amount){
     if (!potId) {
         throw new Error('potId ID is required');
@@ -47,9 +69,9 @@ async function addPot(pot){
     }
 }
 
-const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, className}) => {
+const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, className, path}) => {
 
-    const handleClick = (e) => {
+    const handleClick = async (e) => {
         e.preventDefault()
         if (name !== 'add pot'){
         const currentAmount = parseFloat(pot.current_amount);
@@ -110,6 +132,51 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                     setError(error.message);
                 });
             }
+        // 🔐 Auth logic (login/register)
+
+
+
+
+    // if (path === "/Login" || path === "/Register") {
+    //     const authUrl = `${urlAuth}${path === "/Login" ? "/login" : "/register"}`;
+    //     try {
+    //       const data = await getLogin(form, authUrl);
+    //       setUser(data.data.user);
+    //       navigate("/");
+    //     } catch (error) {
+    //       setError(error.message);
+    //     }
+    //     return;
+    //   }
+    //   const enteredAmount = parseFloat(form.amount || 0);
+    //   const currentAmount = parseFloat(pot?.current_amount || 0);
+    //   const goalAmount = parseFloat(pot?.goal_amount || 0);
+    //   let newAmount = currentAmount;
+    //   try {
+    //     if (name === "add pot") {
+    //       const newPot = { ...form, user_id: user.id, current_amount: 0 };
+    //       const result = await addPot(newPot);
+    //       refreshPots();
+    //     } else if (name === "confirm addition") {
+    //       newAmount = currentAmount + enteredAmount;
+    //       if (newAmount > goalAmount) {
+    //         setError("You have reached the target amount");
+    //         return;
+    //       }
+    //       await addMoney(pot.id, newAmount);
+    //       refreshPots();
+    //     } else {
+    //       newAmount = currentAmount - enteredAmount;
+    //       if (newAmount < 0) {
+    //         setError("You cannot withdraw more than you have");
+    //         return;
+    //       }
+    //       await addMoney(pot.id, newAmount);
+    //       refreshPots();
+    //     }
+    //   } catch (error) {
+    //     setError(error.message);
+    //   }
     }
     return (
         <>

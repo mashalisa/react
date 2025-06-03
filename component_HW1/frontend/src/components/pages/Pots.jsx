@@ -15,7 +15,7 @@ async function getPots(userId){
     if (!userId) {
         throw new Error('User ID is required');
     }
-    const response = await fetch(`http://localhost:3000/api/pots/${userId}/`)
+    const response = await fetch(`https://react-p8qv.onrender.com/api/pots/${userId}/`)
     const data = await response.json()
     if(response.ok){
         return data
