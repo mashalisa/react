@@ -1,5 +1,6 @@
-const { Pot, User } = require('../../DB/models');
+const { Vault, User } = require('../../DB/models');
 const { v4: uuidv4 } = require('uuid');
+const sequelize = require('../../configDB/sequelize');
 
 function getRandomName() {
     const categories = ['Travel', 'Education', 'Investment', 'Savings', 'Housing', 'Entertainment', 'Other', 'Gifts', 'Health', 'Debt', 'Miscellaneous'];
@@ -7,23 +8,28 @@ function getRandomName() {
 }
 
 function getRandomTheme() {
-    const themes = ['green', 'yellow', 'red', 'blue', 'purple', 'orange', 'pink', 'brown', 'gray', 'black', 'white','cyan', 'navy', 'magenta', 'army', 'fuchsia', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'];
+    const themes = ['green', 'yellow', 'red', 'blue', 'purple', 'orange', 'pink', 'brown', 'gray', 'black', 'white', 'cyan', 'navy', 'magenta', 'army', 'fuchsia', 'teal'];
     return themes[Math.floor(Math.random() * themes.length)];
 }
 
-function generateRandomPots(userId) {
+function generateRandomVaults(userId) {
+    const minPercentage = 0.2; // 20%
+    const maxPercentage = 0.7; // 70%
+    const goal_amount = Math.floor(Math.random() * 10000) + 1;
+    const current_amount = Math.floor(Math.random() * (goal_amount * maxPercentage - goal_amount * minPercentage)) + goal_amount * minPercentage;
     return {
         id: uuidv4(),
         name: getRandomName(),
-        goal_amount: Math.floor(Math.random() * 10000) + 1,
+        goal_amount: goal_amount,
+        current_amount: current_amount,
         theme: getRandomTheme(),
         user_id: userId
     };
 }
 
-const seedPots = async () => {
+const seedVaults = async () => {
     try {
-        console.log('Starting pot seeding process...');
+        console.log('Starting vault seeding process...');
         
         // Get all users from the database
         const users = await User.findAll();
@@ -34,36 +40,36 @@ const seedPots = async () => {
             return;
         }
 
-        let totalPotsCreated = 0;
+        let totalVaultsCreated = 0;
 
-        // Create pots for each user
+        // Create vaults for each user
         for (const user of users) {
             try {
-                // Generate 3 random pots for each user
-                const pots = Array(3).fill(null).map(() => generateRandomPots(user.id));
+                // Generate 3 random vaults for each user
+                const vaults = Array(3).fill(null).map(() => generateRandomVaults(user.id));
                 
-                // Insert pots into database
-                const createdPots = await Pot.bulkCreate(pots);
-                totalPotsCreated += createdPots.length;
+                // Insert vaults into database
+                const createdVaults = await Vault.bulkCreate(vaults);
+                totalVaultsCreated += createdVaults.length;
                 
-                console.log(`✅ Successfully seeded ${createdPots.length} pots for user: ${user.user_name}`);
+                console.log(`✅ Successfully seeded ${createdVaults.length} vaults for user: ${user.user_name}`);
             } catch (userError) {
-                console.error(`❌ Error seeding pots for user ${user.user_name}:`, userError);
+                console.error(`❌ Error seeding vaults for user ${user.user_name}:`, userError);
                 // Continue with next user even if one fails
                 continue;
             }
         }
 
-        console.log(`\n🎉 Seeding completed! Created ${totalPotsCreated} pots for ${users.length} users`);
+        console.log(`\n🎉 Seeding completed! Created ${totalVaultsCreated} vaults for ${users.length} users`);
     } catch (error) {
-        console.error('❌ Error in pot seeding process:', error);
-        throw error; // Re-throw to handle it in the calling code
+        console.error('❌ Error in vault seeding process:', error);
+        throw error;
     }
 };
 
 // If this file is run directly (not imported)
 if (require.main === module) {
-    seedPots()
+    seedVaults()
         .then(() => {
             console.log('Seeding process finished');
             process.exit(0);
@@ -73,6 +79,6 @@ if (require.main === module) {
             process.exit(1);
         });
 } else {
-    module.exports = seedPots;
+    module.exports = seedVaults;
 }
 

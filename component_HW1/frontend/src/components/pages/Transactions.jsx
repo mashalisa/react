@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Card from '../basic/Card';
 
 
 async function getTransactions()  {
@@ -25,7 +26,11 @@ const Transactions = (page) => {
       }, []);
     console.log(transactions, 'transactions');
     return (
-      
+      <>
+      <div className="header">        
+            <h1>{page.page}</h1>
+            </div>
+      <Card>
         <div>
           <table className='table'>
         <thead>
@@ -42,12 +47,17 @@ const Transactions = (page) => {
               <td>{transaction.recipient_name}</td>
               <td>{transaction.category}</td>
               <td>{new Date(transaction.transaction_date).toLocaleDateString()}</td>
-              <td>{transaction.amount}</td>
+              <td className={transaction.amount >0 ? 'positive' : 'negative'}>{transaction.amount}</td>
             </tr>
           ))}
         </tbody>
       </table>
         </div>
+      </Card>
+      
+      </>
+      
+        
     )
      
 }

@@ -1,26 +1,31 @@
-const potsService = require('../services/potServices');
-
+const vaultServices = require('../services/potServices');
 
 function potsController() {
-    console.log('transactionsController');
+    console.log('vaultsController');
     this.init = () => {
-        Object.keys(potsService).forEach((method) => {
+        Object.keys(vaultServices).forEach((method) => {
             this[method] = async (req, res) => {
                 try {
                     let result;
                   
-                    if (method === 'getAllPots') {
-                        result = await potsService[method]();
-                    } else if (method === 'getAllPotsByNameByUserId') {
-                        result = await potsService[method](req.params.name, req.params.userId);
-                    } else if (method === 'addNewPot') {
-                        result = await potsService[method](req.body);
-                    } else if (method === 'editPot') {
-                        result = await potsService[method](req.body, req.params.id);
-                    } else if (method === 'getAllPotsByUserId') {
-                        result = await potsService[method](req.params.userId);
+                    if (method === 'getAllVaults') {
+                        result = await vaultServices[method]();
+                    } else if (method === 'getAllVaultsByNameByUserId') {
+                        const { name, userId } = req.params;
+                        console.log('Searching for vaults with name:', name, 'and userId:', userId);
+                        result = await vaultServices[method](name, userId);
+                    } else if (method === 'getAllVaultsByUserIdGroupByName') {
+                        const { userId } = req.params;
+                        console.log('Grouping vaults for user:', userId);
+                        result = await vaultServices[method](userId);
+                    } else if (method === 'addNewVault') {
+                        result = await vaultServices[method](req.body);
+                    } else if (method === 'editVault') {
+                        result = await vaultServices[method](req.body, req.params.id);
+                    } else if (method === 'getAllVaultsByUserId') {
+                        result = await getAllVaultsByUserId(req.params.userId);
                     } else {
-                        result = await potsService[method](req.params.id);
+                        result = await vaultServices[method](req.params.id);
                     }
                     
                     res.status(200).json({
@@ -39,5 +44,36 @@ function potsController() {
     };
     this.init();
 }
+
+const getAllVaultsByUserId = async (userId) => {
+    try {
+        console.log('Controller: Getting vaults for user:', userId);
+        if (!userId) {
+            throw { status: 400, message: 'User ID is required' };
+        }
+
+        const vaults = await vaultServices.getAllVaultsByUserId(userId);
+        console.log('Controller: Found vaults:', vaults);
+
+        if (!vaults || vaults.length === 0) {
+            return {
+                success: true,
+                data: [],
+                message: 'No vaults found for this user'
+            };
+        }
+
+        return {
+            success: true,
+            data: vaults
+        };
+    } catch (error) {
+        console.error('Controller error in getAllVaultsByUserId:', error);
+        throw {
+            status: error.status || 500,
+            message: error.message || 'Error fetching vaults'
+        };
+    }
+};
 
 module.exports = new potsController();

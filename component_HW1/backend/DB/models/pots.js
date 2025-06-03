@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../configDB/sequelize');
 
-const Pot = sequelize.define('Pot', {
+const Vault = sequelize.define('Vault', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -15,17 +15,23 @@ const Pot = sequelize.define('Pot', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
+    current_amount: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0
+    },
     user_id: {
         type: DataTypes.UUID,
         allowNull: false
     },
     theme: {
-        type: DataTypes.ENUM('green', 'yellow', 'red', 'blue', 'purple', 'orange', 'pink', 'brown', 'gray', 'black', 'white','cyan', 'navy', 'magenta', 'army', 'fuchsia', 'purple', 'pink', 'red', 'orange', 'yellow', 'green', 'teal', 'cyan'),
+        type: DataTypes.ENUM('green', 'yellow', 'red', 'blue', 'purple', 'orange', 'pink', 'brown', 'gray', 'black', 'white', 'cyan', 'navy', 'magenta', 'army', 'fuchsia', 'teal'),
         allowNull: false
     }
 }, {
-    tableName: 'pots',
-    timestamps: true
+    tableName: 'vaults',
+    timestamps: true,
+    underscored: true
 });
 
-module.exports = Pot;
+module.exports = Vault;

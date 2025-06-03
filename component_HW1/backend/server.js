@@ -11,15 +11,15 @@ const transactionsRoutes = require('./routers/transactionsRoutes');
 const potsRoutes = require('./routers/potRouters');
 const app = express();
 
-
-
-app.use(cors());
+// CORS configuration to allow all origins
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Import models from index.js
-const { User, Budjets, Transaction, Pot } = require('./DB/models');
-
-
-
+const { User, Budjets, Transaction, Vault } = require('./DB/models');
 
 // Middleware for parsing JSON bodies
 app.use(express.json());
@@ -27,7 +27,10 @@ app.use(express.json());
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err);
-    res.status(500).json({ error: err.message });
+    res.status(err.status || 500).json({
+        success: false,
+        message: err.message || 'Internal Server Error'
+    });
 });
 
 // Mount routes with /api prefix
@@ -38,7 +41,6 @@ app.use('/api/transactions', transactionsRoutes);
 app.use('/api/pots', potsRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-
 
 // ✅ Import sequelize from DB models (includes associations!)
 // const { sequelize } = require('./DB/models');
@@ -51,6 +53,9 @@ const syncDatabase = async () => {
     try {
         // First, disable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
+
+        // Ensure all models are loaded
+        const { User, Budjets, Transaction, Vault } = require('./DB/models');
 
         // Sync with alter: true to update table structures
         await sequelize.sync({ alter: true });

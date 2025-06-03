@@ -1,7 +1,7 @@
 import { useState } from 'react'; //useState is a React Hook that lets you add a state variable to your component.
 //State: A Component's Memory
 //It stores dynamic data — things that can change while the app is running.
-// Components need to “remember” things like the current input value
+// Components need to "remember" things like the current input value
 //in React, this kind of component-specific memory is called state.
 
 import './App.css'
@@ -18,15 +18,15 @@ import { Route, useLocation } from "wouter";
 import { AuthContext } from './contexts/AuthContext';
 import { useEffect, useContext } from 'react';
 import Header from './components/layout/Header';
+
 function App() {
   const menu = [
-    { id: 'page1', label: 'overview', path: '/', component: Overview, isButton: false },
-    { id: 'page2', label: 'transactions', path: '/transactions', component: Transactions, isButton: false },
-    { id: 'page3', label: 'budgets', path: '/budgets', component: Budgets, isButton: true },
-    { id: 'page4', label: 'pots', path: '/pots', component: Pots, isButton: true },
-    { id: 'page5', label: 'recurring bills', path: '/recurring-bills', component: RecurringBills, isButton: false }
+    { id: 'page1', label: 'overview', path: '/', component: Overview, isButtonExists: false },
+    { id: 'page2', label: 'transactions', path: '/transactions', component: Transactions, isButtonExists: false },
+    { id: 'page3', label: 'budgets', path: '/budgets', component: Budgets, isButtonExists: true },
+    { id: 'page4', label: 'pots', path: '/pots', component: Pots, isButtonExists: true },
+    { id: 'page5', label: 'recurring bills', path: '/recurring-bills', component: RecurringBills, isButtonExists: false }
   ];
-
 
   const {user}  = useContext(AuthContext)
   const [_, navigate] = useLocation()
@@ -37,7 +37,6 @@ function App() {
     }
   }, [user])
 
-  
   if (user ) {
     return (
       <div className="page-container">
@@ -47,7 +46,7 @@ function App() {
             return (
               <Route path={item.path} key={item.id}>
                 <>
-                <Header page={item} />
+                {/* <Header page={item} /> */}
                 <item.component page={item.label} />
                 </>
               

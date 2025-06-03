@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const potsController = require('../controllers/potsController');
+const vaultsController = require('../controllers/potsController');
 
 /**
  * @swagger
@@ -13,6 +13,7 @@ const potsController = require('../controllers/potsController');
  *         - goal_amount
  *         - user_id
  *         - theme
+ *         - current_amount
  *       properties:
  *         id:
  *           type: string
@@ -25,6 +26,11 @@ const potsController = require('../controllers/potsController');
  *           type: number
  *           format: float
  *           description: The target amount for the pot
+ *         current_amount:
+ *           type: number
+ *           format: float
+ *           description: The current amount in the pot
+ *           default: 0
  *         user_id:
  *           type: string
  *           format: uuid
@@ -61,7 +67,7 @@ const potsController = require('../controllers/potsController');
  *       500:
  *         description: Server error
  */
-router.get('/', potsController.getAllPots);
+router.get('/', vaultsController.getAllVaults);
 
 /**
  * @swagger
@@ -89,7 +95,153 @@ router.get('/', potsController.getAllPots);
  *       500:
  *         description: Server error
  */
-router.get('/:id', potsController.getPotById);
+router.get('/id/:id', vaultsController.getVaultById);
+
+/**
+ * @swagger
+ * /api/pots/{userId}/groupByName:
+ *   get:
+ *     summary: Get all vaults for a user, grouped by name
+ *     tags: [Pots]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: List of vaults grouped by name
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Pot'
+ *               example:
+ *                 "Debt":
+ *                   - id: "uuid"
+ *                     name: "Debt"
+ *                     goal_amount: 1000
+ *                     current_amount: 500
+ *                     user_id: "uuid"
+ *                     theme: "red"
+ *                   - id: "uuid"
+ *                     name: "Debt"
+ *                     goal_amount: 2000
+ *                     current_amount: 1000
+ *                     user_id: "uuid"
+ *                     theme: "blue"
+ *                 "Savings":
+ *                   - id: "uuid"
+ *                     name: "Savings"
+ *                     goal_amount: 5000
+ *                     current_amount: 2500
+ *                     user_id: "uuid"
+ *                     theme: "green"
+ *       404:
+ *         description: No vaults found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:userId/groupByName', vaultsController.getAllVaultsByUserIdGroupByName);
+
+/**
+ * @swagger
+ * /api/pots/{name}/{userId}:
+ *   get:
+ *     summary: Get all pots by user ID and name
+ *     tags: [Pots]
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The pot name to search for
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         required: true
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: List of pots matching the criteria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Pot'
+ *       404:
+ *         description: No pots found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:name/:userId', vaultsController.getAllVaultsByNameByUserId);
+
+/**
+ * @swagger
+ * /api/pots/{userId}:
+ *   get:
+ *     summary: Get all vaults for a specific user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: List of vaults for the user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       goal_amount:
+ *                         type: number
+ *                       current_amount:
+ *                         type: number
+ *                       user_id:
+ *                         type: string
+ *       404:
+ *         description: No vaults found for this user
+ *       500:
+ *         description: Server error
+ */
+router.get('/:userId', async (req, res) => {
+    try {
+        console.log('Getting vaults for user:', req.params.userId);
+        const result = await vaultsController.getAllVaultsByUserId(req.params.userId);
+        console.log('Vaults found:', result);
+        res.json(result);
+    } catch (error) {
+        console.error('Error in get vaults route:', error);
+        res.status(error.status || 500).json({
+            success: false,
+            message: error.message || 'Error fetching vaults'
+        });
+    }
+});
 
 /**
  * @swagger
@@ -115,13 +267,13 @@ router.get('/:id', potsController.getPotById);
  *       500:
  *         description: Server error
  */
-router.post('/', potsController.addNewPot);
+router.post('/', vaultsController.addNewVault);
 
 /**
  * @swagger
  * /api/pots/{id}:
  *   put:
- *     summary: Update a pot by ID
+ *     summary: Update a vault's current amount by ID
  *     tags: [Pots]
  *     parameters:
  *       - in: path
@@ -130,26 +282,35 @@ router.post('/', potsController.addNewPot);
  *           type: string
  *           format: uuid
  *         required: true
- *         description: The pot ID
+ *         description: The vault ID
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Pot'
+ *             type: object
+ *             required:
+ *               - current_amount
+ *             properties:
+ *               current_amount:
+ *                 type: number
+ *                 format: float
+ *                 description: The new current amount for the vault
+ *             example:
+ *               current_amount: 5000.50
  *     responses:
  *       200:
- *         description: The pot was updated
+ *         description: The vault's current amount was updated
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Pot'
  *       404:
- *         description: The pot was not found
+ *         description: The vault was not found
  *       500:
  *         description: Server error
  */
-router.put('/:id', potsController.editPot);
+router.put('/:id', vaultsController.editVault);
 
 /**
  * @swagger
@@ -173,72 +334,6 @@ router.put('/:id', potsController.editPot);
  *       500:
  *         description: Server error
  */
-router.delete('/:id', potsController.deletePot);
-
-/**
- * @swagger
- * /api/pots/{userId}/{name}:
- *   get:
- *     summary: Get all pots by user ID and name
- *     tags: [Pots]
- *     parameters:
- *       - in: path
- *         name: userId
- *         schema:
- *           type: string
- *           format: uuid
- *         required: true
- *         description: The user ID
- *       - in: path
- *         name: name
- *         schema:
- *           type: string
- *         required: true
- *         description: The pot name to search for
- *     responses:
- *       200:
- *         description: List of pots matching the criteria
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Pot'
- *       404:
- *         description: No pots found
- *       500:
- *         description: Server error
- */
-router.get('/:userId/:name', potsController.getAllPotsByNameByUserId);
-
-/**
- * @swagger
- * /api/pots/{userId}:
- *   get:
- *     summary: Get all pots by user ID
- *     tags: [Pots]
- *     parameters:
- *       - in: path
- *         name: userId
- *         schema:
- *           type: string
- *           format: uuid
- *         required: true
- *         description: The user ID
- *     responses:
- *       200:
- *         description: List of pots for the user
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Pot'
- *       404:
- *         description: No pots found
- *       500:
- *         description: Server error
- */
-router.get('/:userId', potsController.getAllPotsByUserId);
+router.delete('/:id', vaultsController.deleteVault);
 
 module.exports = router;

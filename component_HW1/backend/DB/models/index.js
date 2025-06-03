@@ -2,7 +2,7 @@ const sequelize = require('../../configDB/sequelize');
 const User = require('./users');
 const Budjets = require('./budjets');
 const Transaction = require('./transactions');
-const Pot = require('./pots');
+const Vault = require('./pots');
 
 // Define associations
 Budjets.hasMany(Transaction, { 
@@ -16,13 +16,13 @@ Transaction.belongsTo(Budjets, {
     onUpdate: 'CASCADE'
 });
 
-// User-Pot associations
-User.hasMany(Pot, { 
+// User-Vault associations
+User.hasMany(Vault, { 
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 });
-Pot.belongsTo(User, { 
+Vault.belongsTo(User, { 
     foreignKey: 'user_id',
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
@@ -33,5 +33,5 @@ module.exports = {
     User,
     Budjets,
     Transaction,
-    Pot
+    Vault
 };

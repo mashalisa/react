@@ -1,4 +1,4 @@
-const InputField = ({ name, type, value, onChange, label_name }) => {
+const InputField = ({ name, type, value, onChange, label_name, placeholder }) => {
   return (
     <div>
       <label htmlFor={name}>{label_name}</label>
@@ -8,6 +8,7 @@ const InputField = ({ name, type, value, onChange, label_name }) => {
         type={type}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
       />
     </div>
   );

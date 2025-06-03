@@ -23,6 +23,7 @@ async function getLogin(formData, url)  {
   return result; 
 };
 
+
 const  ButtonSubmit =  ( {name, form, setError,path} ) => {
 
 
@@ -41,8 +42,8 @@ const [_, navigate] = useLocation()
   function handleClick (e) {
     e.preventDefault();
     getLogin(form, url).then(function(data){
-      console.log(data, 'data sent')
-      setUser(data)
+      console.log(data.data.user, 'data sent')
+      setUser(data.data.user)
       console.log(data, 'data in handleLogin')
       navigate('/')
     }).catch((error) => {
