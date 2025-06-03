@@ -70,12 +70,25 @@ const getAllVaultsByNameByUserId = async (name, userId) => {
 
 // Get vaults by user ID
 const getAllVaultsByUserId = async (userId) => {
-    console.log('getAllVaultsByUserId');
-    return await Vault.findAll({
-        where: {
-            user_id: userId
+    try {
+        console.log('Service: Getting vaults for user:', userId);
+        if (!userId) {
+            throw { status: 400, message: 'User ID is required' };
         }
-    });
+
+        const vaults = await Vault.findAll({
+            where: { user_id: userId }
+        });
+
+        console.log('Service: Found vaults:', vaults);
+        return vaults;
+    } catch (error) {
+        console.error('Service error in getAllVaultsByUserId:', error);
+        throw {
+            status: error.status || 500,
+            message: error.message || 'Error fetching vaults from database'
+        };
+    }
 };
 
 // Get vault by ID

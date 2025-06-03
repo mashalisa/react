@@ -15,12 +15,25 @@ async function getPots(userId){
     if (!userId) {
         throw new Error('User ID is required');
     }
-    const response = await fetch(`https://react-p8qv.onrender.com/api/pots/${userId}/`)
-    const data = await response.json()
-    if(response.ok){
-        return data
-    }else{
-        throw new Error('Failed to fetch pots')
+    try {
+        const response = await fetch(`https://react-p8qv.onrender.com/api/pots/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch pots');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Error in pots:', error);
+        // Ensure we always throw an error with a message
+        throw new Error(error.message || 'Failed to fetch pots');
     }
 }
 
