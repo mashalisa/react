@@ -1,4 +1,6 @@
-const urlPot = "https://react-p8qv.onrender.com/api/pots"
+// API endpoints
+const urlPot = "http://localhost:3000/api/pots";
+const urlAuth = "https://react-p8qv.onrender.com/api/auth";
 
 
 async function getLogin(formData, url)  {
@@ -36,152 +38,118 @@ async function addMoney(potId, amount){
         body: JSON.stringify({ current_amount: amount })
       });
     
+      console.log('Received response:', response.status, response.statusText);
+      const data = await response.json();
+      console.log('Parsed response data:', data);
+      
       if (!response.ok) {
-        throw new Error(`Server error: ${response.message}`);
-        console.log(response.message, 'response.message')
-        
+          console.error('Server returned error:', data);
+          throw new Error(data.message || 'Unknown server error');
       }
-    
-      const result = await response.json(); 
-      console.log(result, 'result in addMoney')
-            // parse JSON response
-      return result; 
+      
+      console.log('Pot created successfully:', data);
+      return data;
     
 }
 
 async function addPot(pot){
+    console.log('Starting addPot with data:', pot);
     try {
+        console.log('Making POST request to:', urlPot);
         const response = await fetch(urlPot, {
             method: "POST",
             headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(pot)
-      });
-      if (!response.ok) {
-        const errorData = await response.json(); // Parse the JSON body
-        throw new Error(errorData.message || 'Unknown server error');
-      }
-      return await response.json(); 
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(pot)
+        });
+        
+        console.log('Received response:', response.status, response.statusText);
+        const data = await response.json();
+        console.log('Parsed response data:', data);
+        
+        if (!response.ok) {
+            console.error('Server returned error:', data);
+            throw new Error(data.message || 'Unknown server error');
+        }
+        
+        console.log('Pot created successfully:', data);
+        return data;
     } catch (error) {
-        console.error(error.message, 'error.message');
-        throw new Error(`Server error: ${error.message}`);
+        console.error('Error in addPot:', error);
+        throw error;
     }
 }
 
 const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, className, path}) => {
-
     const handleClick = async (e) => {
-        e.preventDefault()
-        if (name !== 'add pot'){
-        const currentAmount = parseFloat(pot.current_amount);
-        const enteredAmount = parseFloat(formData.amount);
-        let newAmount = 0;
-        console.log(newAmount, 'newAmount in ButtonSubmit')
-        console.log(pot.goal_amount, 'pot.goal_amount in ButtonSubmit')
-        console.log(user, 'user in ButtonSubmit')
-       
-    
-        
-            if (name === 'confirm addition') {
-                 newAmount = currentAmount + enteredAmount;
-                 console.log(newAmount, 'newAmount in ButtonSubmit')
-                 if (newAmount > pot.goal_amount) {
-                    setError('You have reached the target amount')
-                    console.log(newAmount, 'newAmount in ButtonSubmit')
-                    newAmount = currentAmount ;
+        e.preventDefault();
 
-                 }
-                 else {
-                    newAmount = currentAmount + enteredAmount;
-                 }
-            }
-            else {
-                newAmount = currentAmount - enteredAmount;
-                console.log(newAmount, 'newAmount in ButtonSubmit')
-                if (newAmount < 0) {
-                    setError('you can not withdraw more than you have')
-                    console.log(newAmount, 'you can not withdraw more than you have')
-                    newAmount = currentAmount ;
-                }
-                else {
-                    newAmount = currentAmount - enteredAmount;
-                }
-            }
-            addMoney(pot.id, newAmount).then(function(data){
-                console.log(data, 'data sent in addMoney')
-                refreshPots();
-              }).catch((error) => {
-                console.error("Login error:", error.message);
+        if (path === "/Login" || path === "/Register") {
+            const authUrl = `${urlAuth}${path === "/Login" ? "/login" : "/register"}`;
+            try {
+                const data = await getLogin(formData, authUrl);
+                setUser(data.data.user);
+                navigate("/");
+            } catch (error) {
                 setError(error.message);
-              });
             }
-            else {
-                formData = {...formData, user_id: user.id, current_amount: 0}
-                console.log(formData, 'formData in addPot')
-                addPot(formData).then(function(data){
-                    console.log(data, 'data sent in addPot')
-                    if (data.success){
-                        refreshPots();
-                    }
-                    else {
-                        setError(data.message);
-                    }
-                }).catch((error) => {
-                    console.error("Login error:", error.message);   
-                    setError(error.message);
-                });
+            return;
+        }
+
+        try {
+            if (name === "add pot") {
+                const newPot = {...formData, user_id: user.id, current_amount: 0};
+                console.log('Creating new pot:', newPot);
+                const data = await addPot(newPot);
+                console.log('Pot creation completed:', data);
+                if (data.success) {
+                    console.log('Refreshing pots list...');
+                    refreshPots();
+                } else {
+                    console.error('Pot creation failed:', data.message);
+                    setError(data.message);
+                }
+            } else if (name === "confirm addition") {
+                const enteredAmount = parseFloat(formData.amount || 0);
+                const currentAmount = parseFloat(pot?.current_amount || 0);
+                const goalAmount = parseFloat(pot?.goal_amount || 0);
+                const newAmount = currentAmount + enteredAmount;
+                
+                if (newAmount > goalAmount) {
+                    setError("You have reached the target amount");
+                    return;
+                }
+                const data = await addMoney(pot.id, newAmount);
+                console.log('Pot creation completed:', data);
+                if (data.success) {
+                    console.log('Refreshing pots list...');
+                    refreshPots();
+                } else {
+                    console.error('Pot creation failed:', data.message);
+                    setError(data.message);
+                }
+            } else if (name === "confirm withdraw") {
+                const enteredAmount = parseFloat(formData.amount || 0);
+                const currentAmount = parseFloat(pot?.current_amount || 0);
+                const newAmount = currentAmount - enteredAmount;
+                
+                if (newAmount < 0) {
+                    setError("You cannot withdraw more than you have");
+                    return;
+                }
+                await addMoney(pot.id, newAmount);
+                refreshPots();
             }
-        // 🔐 Auth logic (login/register)
+        } catch (error) {
+            console.error(`Error in ${name}:`, error);
+            setError(error.message);
+        }
+    };
 
-
-
-
-    // if (path === "/Login" || path === "/Register") {
-    //     const authUrl = `${urlAuth}${path === "/Login" ? "/login" : "/register"}`;
-    //     try {
-    //       const data = await getLogin(form, authUrl);
-    //       setUser(data.data.user);
-    //       navigate("/");
-    //     } catch (error) {
-    //       setError(error.message);
-    //     }
-    //     return;
-    //   }
-    //   const enteredAmount = parseFloat(form.amount || 0);
-    //   const currentAmount = parseFloat(pot?.current_amount || 0);
-    //   const goalAmount = parseFloat(pot?.goal_amount || 0);
-    //   let newAmount = currentAmount;
-    //   try {
-    //     if (name === "add pot") {
-    //       const newPot = { ...form, user_id: user.id, current_amount: 0 };
-    //       const result = await addPot(newPot);
-    //       refreshPots();
-    //     } else if (name === "confirm addition") {
-    //       newAmount = currentAmount + enteredAmount;
-    //       if (newAmount > goalAmount) {
-    //         setError("You have reached the target amount");
-    //         return;
-    //       }
-    //       await addMoney(pot.id, newAmount);
-    //       refreshPots();
-    //     } else {
-    //       newAmount = currentAmount - enteredAmount;
-    //       if (newAmount < 0) {
-    //         setError("You cannot withdraw more than you have");
-    //         return;
-    //       }
-    //       await addMoney(pot.id, newAmount);
-    //       refreshPots();
-    //     }
-    //   } catch (error) {
-    //     setError(error.message);
-    //   }
-    }
     return (
-        <>
-        <button type="submit" className={className} onClick={handleClick}>{name}</button>
-        </>
-    )
-}
-export default ButtonSubmit
+        <button type="submit" onClick={handleClick} className={className}>{name}</button>
+    );
+};
+
+export default ButtonSubmit;

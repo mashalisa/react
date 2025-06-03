@@ -83,9 +83,9 @@ const Pots = (page) => {
         refreshPots();
     }, [user])
    
-    // useEffect(() => {
-    //     console.log(pots, 'pots in pots render')
-    // }, [pots])
+    useEffect(() => {
+        console.log(pots, 'pots in pots render')
+    }, [pots])
 
 
   

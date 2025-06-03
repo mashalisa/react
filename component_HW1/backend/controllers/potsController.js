@@ -28,9 +28,16 @@ function potsController() {
                         console.log('Grouping vaults for user:', userId);
                         result = await vaultServices[method](userId);
                     } else if (method === 'addNewVault') {
+                        console.log('Controller: Adding new vault with data:', req.body);
                         result = await vaultServices[method](req.body);
+                        console.log('Controller: Vault creation result:', result);
+                        return res.status(201).json(result);
                     } else if (method === 'editVault') {
+                        console.log('Controller: Editing vault with ID:', req.params.id);
+                        console.log('Controller: Edit data:', req.body);
                         result = await vaultServices[method](req.body, req.params.id);
+                        console.log('Controller: Edit result:', result);
+                        return res.status(200).json(result);
                     } else if (method === 'getAllVaultsByUserId') {
                         const { userId } = req.params;
                         console.log('Controller: Getting vaults for user:', userId);

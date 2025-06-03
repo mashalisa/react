@@ -108,28 +108,55 @@ const getVaultById = async (id) => {
 
 // Add a new vault
 const addNewVault = async (vaultData) => {
+    console.log('Service: Adding new vault with data:', vaultData);
     const {user_id, name, goal_amount, theme, current_amount} = vaultData;
+    
     // Check if a vault with the same name exists for this user
     const exists = await Vault.findOne({
         where: {
-        user_id,
-        name
+            user_id,
+            name
         }
     });
+    
     if (exists) {
         throw new Error('Vault with this name already exists');
     }
-    return await Vault.create(vaultData);
+    
+    const newVault = await Vault.create(vaultData);
+    console.log('Service: Created new vault:', newVault);
+    
+    return {
+        success: true,
+        data: newVault,
+        message: 'Vault created successfully'
+    };
 };
 
 // Edit a vault
 const editVault = async (vaultData, id) => {
-    const vaultToUpdate = await Vault.findByPk(id);
-    if (!vaultToUpdate) {
-        throw new Error('Vault not found');
+    console.log('Service: Editing vault with ID:', id);
+    console.log('Service: Edit data:', vaultData);
+    
+    try {
+        const vaultToUpdate = await Vault.findByPk(id);
+        if (!vaultToUpdate) {
+            console.log('Service: Vault not found with ID:', id);
+            throw new Error('Vault not found');
+        }
+        
+        const editedVault = await vaultToUpdate.update(vaultData);
+        console.log('Service: Edited vault:', editedVault);
+        
+        return {
+            success: true,
+            data: editedVault,
+            message: 'Vault edited successfully'
+        };
+    } catch (error) {
+        console.error('Service: Error editing vault:', error);
+        throw error;
     }
-    await vaultToUpdate.update(vaultData);
-    return vaultToUpdate;
 };
 
 // Delete a vault
