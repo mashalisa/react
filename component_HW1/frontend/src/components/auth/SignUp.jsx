@@ -1,7 +1,8 @@
-import ButtonSubmit from "../form/Button"
+// import ButtonSubmit from "../form/Button"
 import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
 import { useContext, useEffect, useState } from "react";
+import ButtonSubmit from "../basic/ButtonSubmit"
 const SignUp = () => {
 
   const [form, setForm] = useState({'email': "", "password": '', "name": ''})
@@ -18,7 +19,7 @@ const SignUp = () => {
         <h1>Sign Up</h1>
         <form >
         <InputField name = "user_name" type = "text" label_name="Name"
-                    value = {form.user_name} 
+                    value = {form.user_name || ''} 
                     onChange = {handleUserInput}
         />
          <InputField name = "email" type = "email" label_name="email"
@@ -29,7 +30,7 @@ const SignUp = () => {
                     value = {form.password} 
                     onChange = {handleUserInput}
         />
-        <ButtonSubmit    name="Create Account" form={form} setError={setError} path="/singup"/>
+        <ButtonSubmit    name="Create Account" formData={form} setError={setError} path="/singup"/>
         {error && <p className="error-message">wrong credentials</p>}
 
         </form>

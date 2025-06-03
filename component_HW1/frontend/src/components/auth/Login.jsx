@@ -2,7 +2,8 @@
 import { useState, useContext } from "react";
 import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
-import ButtonSubmit from "../form/Button"
+// import ButtonSubmit from "../form/Button"
+import ButtonSubmit from "../basic/ButtonSubmit"
 
 
 
@@ -37,7 +38,7 @@ const [error, setError] = useState(false)
                     value = {form.password} 
                     onChange = {handleUserInput}
         />
-          <ButtonSubmit    name="Login" form={form} setError={setError} path="/Login"/>
+          <ButtonSubmit    name="Login" formData={form} setError={setError} path="/Login"/>
          {error && <p className="error-message">wrong credentials</p>}
         </form>
        

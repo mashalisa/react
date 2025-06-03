@@ -1,5 +1,8 @@
+import { useLocation } from "wouter";
+import { AuthContext } from '../../contexts/AuthContext';
+import { useContext } from "react";
 // API endpoints
-const urlPot = "http://localhost:3000/api/pots";
+const urlPot = "https://react-p8qv.onrender.com/api/pots";
 const urlAuth = "https://react-p8qv.onrender.com/api/auth";
 
 
@@ -81,16 +84,28 @@ async function addPot(pot){
     }
 }
 
-const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, className, path}) => {
+const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, className, path, setFormData}) => {
+    const [_, navigate] = useLocation();
+    const { setUser } = useContext(AuthContext);
+
+
     const handleClick = async (e) => {
         e.preventDefault();
-
-        if (path === "/Login" || path === "/Register") {
+        console.log(path, 'path in buttonSubmit')
+        if (path === "/Login" || path === "/singup") {
             const authUrl = `${urlAuth}${path === "/Login" ? "/login" : "/register"}`;
+           console.log(authUrl, 'authUrl in buttonSubmit')
             try {
                 const data = await getLogin(formData, authUrl);
-                setUser(data.data.user);
-                navigate("/");
+                console.log(data, 'data in buttonSubmit')
+                if(data.success){
+                    console.log(data.data.user, 'data.data.user in buttonSubmit')
+                    setUser(data.data.user);
+                    navigate("/");
+                }
+                else{
+                    setError(data.message);
+                }
             } catch (error) {
                 setError(error.message);
             }
@@ -106,6 +121,7 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                 if (data.success) {
                     console.log('Refreshing pots list...');
                     refreshPots();
+                    setIsOpen(false);
                 } else {
                     console.error('Pot creation failed:', data.message);
                     setError(data.message);
@@ -125,6 +141,7 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                 if (data.success) {
                     console.log('Refreshing pots list...');
                     refreshPots();
+                    setFormData({amount: 0});
                 } else {
                     console.error('Pot creation failed:', data.message);
                     setError(data.message);
@@ -140,6 +157,7 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                 }
                 await addMoney(pot.id, newAmount);
                 refreshPots();
+                setFormData({amount: 0});
             }
         } catch (error) {
             console.error(`Error in ${name}:`, error);

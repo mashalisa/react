@@ -32,9 +32,9 @@ const Pots = (page) => {
     const [pots, setPots] = useState([])
     const [formData, setFormData] = useState({'amount': 0})
     const [error, setError] = useState(false)
-     const [isOpen, setIsOpen] = useState(false);
-     const [newAmount, setNewAmount] = useState(0)
 
+     const [newAmount, setNewAmount] = useState(0)
+     const [isOpen, setIsOpen] = useState(false);
      const colorBar = [
         {'color': 'cyan', 'number': '#00FFFF'},
         {'color': 'navy', 'number': '#000080'},
@@ -83,9 +83,9 @@ const Pots = (page) => {
         refreshPots();
     }, [user])
    
-    useEffect(() => {
-        console.log(pots, 'pots in pots render')
-    }, [pots])
+    // useEffect(() => {
+    //     console.log(pots, 'pots in pots render')
+    // }, [pots])
 
 
   
@@ -178,7 +178,7 @@ const Pots = (page) => {
                                     <ProgressBar formData={formData.amount} newAmount={parseFloat(pot.current_amount) + parseFloat(formData.amount)} pot={pot} colorNumber={colorBarPot["number"]} />
                                      <form onSubmit={handleClick}>
                                       <InputField type="number" name="amount" label_name='Amount to add' value={formData?.amount || ''} onChange={handleUserInput} placeholder='$' />
-                                    <ButtonSubmit  pot={pot} formData={formData} name='confirm addition' setError={setError} refreshPots={refreshPots}/>
+                                    <ButtonSubmit  pot={pot} formData={formData} name='confirm addition' setFormData={setFormData} setError={setError} refreshPots={refreshPots}/>
                                     </form>
                                     </>
                                    
@@ -205,7 +205,7 @@ const Pots = (page) => {
                                     <ProgressBar formData={formData.amount} newAmount={parseFloat(pot.current_amount) - parseFloat(formData.amount)} pot={pot} colorNumber={colorBarPot["number"]} />
                                     <form onSubmit={handleClick}>
                                       <InputField type="number" name="amount" value={formData?.amount || ''} onChange={handleUserInput} />
-                                    <ButtonSubmit  pot={pot} formData={formData} name='confirm withdraw' setError={setError} refreshPots={refreshPots} />
+                                    <ButtonSubmit  pot={pot} formData={formData} name='confirm withdraw' setFormData={setFormData} setError={setError} refreshPots={refreshPots} />
                                     </form>
                                     </>
                                 )}
