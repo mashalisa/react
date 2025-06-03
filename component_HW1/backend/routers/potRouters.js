@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const vaultsController = require('../controllers/potsController');
+const potsController = require('../controllers/potsController');
 
 /**
  * @swagger
@@ -67,7 +67,7 @@ const vaultsController = require('../controllers/potsController');
  *       500:
  *         description: Server error
  */
-router.get('/', vaultsController.getAllVaults);
+router.get('/', potsController.getAllVaults);
 
 /**
  * @swagger
@@ -95,7 +95,7 @@ router.get('/', vaultsController.getAllVaults);
  *       500:
  *         description: Server error
  */
-router.get('/id/:id', vaultsController.getVaultById);
+router.get('/id/:id', potsController.getVaultById);
 
 /**
  * @swagger
@@ -148,7 +148,7 @@ router.get('/id/:id', vaultsController.getVaultById);
  *       500:
  *         description: Server error
  */
-router.get('/:userId/groupByName', vaultsController.getAllVaultsByUserIdGroupByName);
+router.get('/:userId/groupByName', potsController.getAllVaultsByUserIdGroupByName);
 
 /**
  * @swagger
@@ -184,7 +184,7 @@ router.get('/:userId/groupByName', vaultsController.getAllVaultsByUserIdGroupByN
  *       500:
  *         description: Server error
  */
-router.get('/:name/:userId', vaultsController.getAllVaultsByNameByUserId);
+router.get('/:name/:userId', potsController.getAllVaultsByNameByUserId);
 
 /**
  * @swagger
@@ -228,20 +228,7 @@ router.get('/:name/:userId', vaultsController.getAllVaultsByNameByUserId);
  *       500:
  *         description: Server error
  */
-router.get('/:userId', async (req, res) => {
-    try {
-        console.log('Getting vaults for user:', req.params.userId);
-        const result = await vaultsController.getAllVaultsByUserId(req.params.userId);
-        console.log('Vaults found:', result);
-        res.json(result);
-    } catch (error) {
-        console.error('Error in get vaults route:', error);
-        res.status(error.status || 500).json({
-            success: false,
-            message: error.message || 'Error fetching vaults'
-        });
-    }
-});
+router.get('/:userId', potsController.getAllVaultsByUserId);
 
 /**
  * @swagger
@@ -267,7 +254,7 @@ router.get('/:userId', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.post('/', vaultsController.addNewVault);
+router.post('/', potsController.addNewVault);
 
 /**
  * @swagger
@@ -310,7 +297,7 @@ router.post('/', vaultsController.addNewVault);
  *       500:
  *         description: Server error
  */
-router.put('/:id', vaultsController.editVault);
+router.put('/:id', potsController.editVault);
 
 /**
  * @swagger
@@ -334,6 +321,6 @@ router.put('/:id', vaultsController.editVault);
  *       500:
  *         description: Server error
  */
-router.delete('/:id', vaultsController.deleteVault);
+router.delete('/:id', potsController.deleteVault);
 
 module.exports = router;

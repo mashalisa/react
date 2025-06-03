@@ -99,7 +99,12 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                 console.log(formData, 'formData in addPot')
                 addPot(formData).then(function(data){
                     console.log(data, 'data sent in addPot')
-                    refreshPots();
+                    if (data.success){
+                        refreshPots();
+                    }
+                    else {
+                        setError(data.message);
+                    }
                 }).catch((error) => {
                     console.error("Login error:", error.message);   
                     setError(error.message);

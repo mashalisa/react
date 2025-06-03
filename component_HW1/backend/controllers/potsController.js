@@ -7,9 +7,18 @@ function potsController() {
             this[method] = async (req, res) => {
                 try {
                     let result;
+                    console.log(`Controller: Executing method ${method}`);
                   
+                    // Handle different methods
                     if (method === 'getAllVaults') {
+                        console.log('Controller: Getting all vaults');
                         result = await vaultServices[method]();
+                        console.log('Controller: Found vaults:', result ? result.length : 0);
+                        return res.status(200).json({
+                            success: true,
+                            data: result,
+                            message: result && result.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found'
+                        });
                     } else if (method === 'getAllVaultsByNameByUserId') {
                         const { name, userId } = req.params;
                         console.log('Searching for vaults with name:', name, 'and userId:', userId);
@@ -23,26 +32,35 @@ function potsController() {
                     } else if (method === 'editVault') {
                         result = await vaultServices[method](req.body, req.params.id);
                     } else if (method === 'getAllVaultsByUserId') {
-                        result = await getAllVaultsByUserId(req.params.userId);
-                    } else {
-                        result = await vaultServices[method](req.params.id);
+                        const { userId } = req.params;
+                        console.log('Controller: Getting vaults for user:', userId);
+                        if (!userId) {
+                            return res.status(400).json({
+                                success: false,
+                                message: 'User ID is required'
+                            });
+                        }
+                        result = await vaultServices[method](userId);
                     }
                     
-                    // If result has success property, use it directly
-                    if (result && typeof result === 'object' && 'success' in result) {
-                        return res.json(result);
-                    }
-                    
-                    // Otherwise wrap it in a success response
-                    res.json({
+                    console.log('Controller: Result from service:', result);
+                    return res.status(200).json({
                         success: true,
-                        data: result
+                        data: result,
+                        message: result && result.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found'
                     });
+                  
                 } catch (error) {
-                    console.error(`Error in ${method}:`, error);
-                    res.json({
+                    console.error('Controller Error Details:', {
+                        method,
+                        error: error.message,
+                        stack: error.stack,
+                        status: error.status
+                    });
+                    res.status(error.status || 500).json({
                         success: false,
-                        message: error.message || 'Internal Server Error'
+                        message: error.message || 'Internal Server Error',
+                        error: process.env.NODE_ENV === 'development' ? error.stack : undefined
                     });
                 }
             };
@@ -50,39 +68,5 @@ function potsController() {
     };
     this.init();
 }
-
-const getAllVaultsByUserId = async (userId) => {
-    try {
-        console.log('Controller: Getting vaults for user:', userId);
-        if (!userId) {
-            return {
-                success: false,
-                message: 'User ID is required',
-                data: []
-            };
-        }
-
-        const vaults = await vaultServices.getAllVaultsByUserId(userId);
-        console.log('Controller: Found vaults:', vaults);
-
-        // If vaults is already a response object, return it
-        if (vaults && typeof vaults === 'object' && 'success' in vaults) {
-            return vaults;
-        }
-
-        return {
-            success: true,
-            data: vaults || [],
-            message: vaults && vaults.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found for this user'
-        };
-    } catch (error) {
-        console.error('Controller error in getAllVaultsByUserId:', error);
-        return {
-            success: false,
-            message: error.message || 'Error fetching vaults',
-            data: []
-        };
-    }
-};
 
 module.exports = new potsController();
