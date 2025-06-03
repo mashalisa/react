@@ -28,13 +28,19 @@ function potsController() {
                         result = await vaultServices[method](req.params.id);
                     }
                     
-                    res.status(200).json({
+                    // If result has success property, use it directly
+                    if (result && typeof result === 'object' && 'success' in result) {
+                        return res.json(result);
+                    }
+                    
+                    // Otherwise wrap it in a success response
+                    res.json({
                         success: true,
                         data: result
                     });
                 } catch (error) {
                     console.error(`Error in ${method}:`, error);
-                    res.status(error.status || 500).json({
+                    res.json({
                         success: false,
                         message: error.message || 'Internal Server Error'
                     });
@@ -49,29 +55,32 @@ const getAllVaultsByUserId = async (userId) => {
     try {
         console.log('Controller: Getting vaults for user:', userId);
         if (!userId) {
-            throw { status: 400, message: 'User ID is required' };
+            return {
+                success: false,
+                message: 'User ID is required',
+                data: []
+            };
         }
 
         const vaults = await vaultServices.getAllVaultsByUserId(userId);
         console.log('Controller: Found vaults:', vaults);
 
-        if (!vaults || vaults.length === 0) {
-            return {
-                success: true,
-                data: [],
-                message: 'No vaults found for this user'
-            };
+        // If vaults is already a response object, return it
+        if (vaults && typeof vaults === 'object' && 'success' in vaults) {
+            return vaults;
         }
 
         return {
             success: true,
-            data: vaults
+            data: vaults || [],
+            message: vaults && vaults.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found for this user'
         };
     } catch (error) {
         console.error('Controller error in getAllVaultsByUserId:', error);
-        throw {
-            status: error.status || 500,
-            message: error.message || 'Error fetching vaults'
+        return {
+            success: false,
+            message: error.message || 'Error fetching vaults',
+            data: []
         };
     }
 };

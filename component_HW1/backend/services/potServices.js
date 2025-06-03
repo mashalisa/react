@@ -73,7 +73,11 @@ const getAllVaultsByUserId = async (userId) => {
     try {
         console.log('Service: Getting vaults for user:', userId);
         if (!userId) {
-            throw { status: 400, message: 'User ID is required' };
+            return {
+                success: false,
+                message: 'User ID is required',
+                data: []
+            };
         }
 
         const vaults = await Vault.findAll({
@@ -81,12 +85,18 @@ const getAllVaultsByUserId = async (userId) => {
         });
 
         console.log('Service: Found vaults:', vaults);
-        return vaults;
+        
+        return {
+            success: true,
+            data: vaults || [],
+            message: vaults.length === 0 ? 'No vaults found for this user' : 'Vaults retrieved successfully'
+        };
     } catch (error) {
         console.error('Service error in getAllVaultsByUserId:', error);
-        throw {
-            status: error.status || 500,
-            message: error.message || 'Error fetching vaults from database'
+        return {
+            success: false,
+            message: error.message || 'Error fetching vaults from database',
+            data: []
         };
     }
 };
