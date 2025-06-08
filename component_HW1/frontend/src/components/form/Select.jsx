@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+
 import ReactSelect from 'react-select';
+
 // const Select = ({name, value, onChange, colorBar}) => {
   
 
@@ -24,12 +25,31 @@ import ReactSelect from 'react-select';
 
 
 
-const Select = ({ name, value, onChange, colorBar }) => {
-  const options = colorBar.map((color) => ({
-    value: color.color,
-    label: color.color,
-    color: color.number, // Assuming this is a color code like 'rgb(255, 0, 0)'
-  }));
+const Select = ({ name, value, onChange, colorBar, categories, colors}) => {
+
+  let options = [];
+  console.log(options, 'options in begiinig')
+  if(name === 'theme'){
+    console.log(name, 'name')
+    console.log(options, 'options')
+    options = colorBar.map((color) => ({
+      value: color.color,
+      label: color.color,
+      color: color.number, // Assuming this is a color code like 'rgb(255, 0, 0)'
+      isDisabled: colors.some(c => c.color === color.color && c.isUsed),
+    }));
+   
+  }
+  else if(name === 'category'){
+     options = categories.map((category) => ({
+      value: category.value,
+      label: category.label,
+    }));
+   
+  }
+
+
+
 
   return (
     <div>
@@ -42,7 +62,7 @@ const Select = ({ name, value, onChange, colorBar }) => {
         options={options}
         getOptionLabel={(e) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span
+            {name === 'theme' && <span
               className="theme-color"
               style={{
                 backgroundColor: e.color,
@@ -51,8 +71,9 @@ const Select = ({ name, value, onChange, colorBar }) => {
                 borderRadius: '50%',
                 display: 'inline-block',
               }}
-            ></span>
+            ></span>}
             {e.label}
+          
           </div>
         )}
         styles={{
@@ -63,7 +84,7 @@ const Select = ({ name, value, onChange, colorBar }) => {
             '&:hover': { borderColor: '#aaa' },
           }),
         }}
-        placeholder="Select a color"
+        placeholder={name === 'theme' ? "Select a color" : "Select a category"}
       />
     </div>
   );

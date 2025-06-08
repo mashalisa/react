@@ -54,6 +54,12 @@ function potsController() {
                             message: result && result.length > 0 ? 'Vaults retrieved successfully' : 'No vaults found'
                         });
                     } 
+                    else if(method === 'deleteVault'){
+                        console.log('Controller: Deleting vault with ID:', req.params.id);
+                        result = await vaultServices[method](req.params.id);
+                        console.log('Controller: Delete result:', result);
+                        return res.status(200).json(result);
+                    }
                     
                  
                 

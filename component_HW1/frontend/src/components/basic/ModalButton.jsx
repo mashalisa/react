@@ -3,12 +3,12 @@ import { useState } from 'react';
 import Button from './button';
 import Modal from './Modal';
 
-const ModalButton = ({ btnName, children }) => {
+const ModalButton = ({ btnName, children, className }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>{btnName}</Button>
+      <Button className={className} onClick={() => setIsOpen(true)}>{btnName}</Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         {typeof children === 'function'
           ? children({ close: () => setIsOpen(false) })

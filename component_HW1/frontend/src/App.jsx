@@ -1,4 +1,4 @@
-import { useState } from 'react'; //useState is a React Hook that lets you add a state variable to your component.
+import { lazy, Suspense } from 'react'; //useState is a React Hook that lets you add a state variable to your component.
 //State: A Component's Memory
 //It stores dynamic data — things that can change while the app is running.
 // Components need to "remember" things like the current input value
@@ -6,11 +6,11 @@ import { useState } from 'react'; //useState is a React Hook that lets you add a
 
 import './App.css'
 import SideBar from './components/sidebar/NavBar';
-import Overview from './components/pages/Overview';
-import RecurringBills from './components/pages/RecurringBills';
-import Transactions from './components/pages/Transactions';
-import Budgets from './components/pages/Budgets';
-import Pots from './components/pages/Pots';
+const Overview = lazy(() => import('./components/pages/Overview'));
+const RecurringBills = lazy(() => import('./components/pages/RecurringBills'));
+const Transactions = lazy(() => import('./components/pages/Transactions'));
+const Budgets = lazy(() => import('./components/pages/Budgets'));
+const Pots = lazy(() => import('./components/pages/Pots'));
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import AuthImage from './components/auth/AuthImage';
@@ -44,6 +44,7 @@ function App() {
         <div className="main-content">
           {menu.map((item) => {
             return (
+              <Suspense fallback={<div>Loading...</div>}>
               <Route path={item.path} key={item.id}>
                 <>
                 {/* <Header page={item} /> */}
@@ -51,6 +52,7 @@ function App() {
                 </>
               
               </Route>
+              </Suspense>
             );
           })}
         </div>

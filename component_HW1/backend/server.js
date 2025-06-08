@@ -19,7 +19,7 @@ app.use(cors({
 }));
 
 // Import models from index.js
-const { User, Budjets, Transaction, Vault } = require('./DB/models');
+const { User, Budgets, Transaction, Vault } = require('./DB/models');
 
 // Middleware for parsing JSON bodies
 app.use(express.json());
@@ -49,11 +49,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 const sequelize = require('./configDB/sequelize');
 
 // Force sync database (this will drop and recreate tables)
-sequelize.sync({ alter: true }).then(() => {
-    console.log('Database synced successfully');
-}).catch(err => {
-    console.error('Error syncing database:', err);
-});
+// sequelize.sync({ alter: true }).then(() => {
+//     console.log('Database synced successfully');
+// }).catch(err => {
+//     console.error('Error syncing database:', err);
+// });
 
 // Function to safely sync database
 const syncDatabase = async () => {
@@ -62,9 +62,9 @@ const syncDatabase = async () => {
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
 
         // Ensure all models are loaded
-        const { User, Budjets, Transaction, Vault } = require('./DB/models');
+        const { User, Budgets, Transaction, Vault } = require('./DB/models');
 
-        // Sync with alter: true to update table structures
+        // Sync with alter: true to modify existing tables
         await sequelize.sync({ alter: true });
 
         // Re-enable foreign key checks

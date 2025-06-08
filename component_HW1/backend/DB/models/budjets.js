@@ -1,25 +1,32 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../configDB/sequelize');
 
-const User = require('./users');
-
-const Budjets = sequelize.define('Budjets', {
+const Budgets = sequelize.define('Budgets', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
     },
-    name: {
-        type: DataTypes.STRING,
+    category: {
+        type: DataTypes.ENUM('entertainment', 'bills', 'groceries', 'dining out', 'transportation', 'shopping', 'other'),
         allowNull: false
     },
     max_amount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    theme: {
+        type: DataTypes.ENUM('green', 'yellow', 'red', 'blue', 'purple', 'orange', 'pink', 'brown', 'gray', 'black', 'white', 'cyan', 'navy', 'magenta', 'army', 'fuchsia', 'teal'),
+        allowNull: false
+    },
+    user_id: {
+        type: DataTypes.UUID,
+        allowNull: false
     }
 }, {
-    tableName: 'budjets',
-    timestamps: true
+    tableName: 'budgets',
+    timestamps: true,
+    underscored: true
 });
 
-module.exports = Budjets;
+module.exports = Budgets;      

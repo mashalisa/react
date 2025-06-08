@@ -165,8 +165,12 @@ const deleteVault = async (id) => {
     if (!vault) {
         throw new Error('Vault not found');
     }
-    await vault.destroy();
-    return { message: 'Vault deleted successfully' };
+    const deleteVault = await vault.destroy();
+    return {
+        success: true,
+        data: deleteVault,
+        message: 'Vault deleted successfully'
+    };
 };
 
 module.exports = {

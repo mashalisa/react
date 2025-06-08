@@ -2,8 +2,12 @@ import { useLocation } from "wouter";
 import { AuthContext } from '../../contexts/AuthContext';
 import { useContext } from "react";
 // API endpoints
-const urlPot = "https://react-p8qv.onrender.com/api/pots";
-const urlAuth = "https://react-p8qv.onrender.com/api/auth";
+const urlPot = "http://localhost:3000/api/pots";
+// const urlAuth = "https://react-p8qv.onrender.com/api/auth";
+
+const urlAuth = "http://localhost:3000/api/auth";
+const urlBasic = "http://localhost:3000/api/";
+let url = '';
 
 
 async function getLogin(formData, url)  {
@@ -27,7 +31,7 @@ async function getLogin(formData, url)  {
     return result; 
   };
 
-async function addMoney(potId, amount){
+async function addMoney(potId, formData, amount){
     if (!potId) {
         throw new Error('potId ID is required');
     }
@@ -38,7 +42,7 @@ async function addMoney(potId, amount){
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ current_amount: amount })
+        body: JSON.stringify({ ...formData, current_amount: amount })
       });
     
       console.log('Received response:', response.status, response.statusText);
@@ -54,17 +58,32 @@ async function addMoney(potId, amount){
       return data;
     
 }
-
-async function addPot(pot){
-    console.log('Starting addPot with data:', pot);
+async function deletePot(itemId, url){
     try {
-        console.log('Making POST request to:', urlPot);
-        const response = await fetch(urlPot, {
+        
+        const response = await fetch(url + '/' + itemId, {
+            method: "DELETE",
+        });
+        const data = await response.json();
+        console.log('Pot deleted successfully:', data);
+        return data;
+        
+    } catch (error) {
+        console.error('Error in deletePot:', error);
+        throw error;
+    }
+}
+async function sendData(newData,url){
+    console.log('Starting sendData with data:', newData);
+    console.log(url, 'url in sendData')
+    try {
+        console.log('Making POST request to:', url);
+        const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(pot)
+            body: JSON.stringify(newData)
         });
         
         console.log('Received response:', response.status, response.statusText);
@@ -79,19 +98,21 @@ async function addPot(pot){
         console.log('Pot created successfully:', data);
         return data;
     } catch (error) {
-        console.error('Error in addPot:', error);
+        console.error('Error in sendData:', error);
         throw error;
     }
 }
 
-const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, className, path, setFormData}) => {
+const ButtonSubmit = ({pot, formData, name, setError, user, className, path, setFormData, close, renderData}) => {
     const [_, navigate] = useLocation();
     const { setUser } = useContext(AuthContext);
+
 
 
     const handleClick = async (e) => {
         e.preventDefault();
         console.log(path, 'path in buttonSubmit')
+       
         if (path === "/Login" || path === "/singup") {
             const authUrl = `${urlAuth}${path === "/Login" ? "/login" : "/register"}`;
            console.log(authUrl, 'authUrl in buttonSubmit')
@@ -111,17 +132,32 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
             }
             return;
         }
-
+        console.log(formData, 'formData in buttonSubmit')
+        console.log(name, 'name in buttonSubmit')
         try {
-            if (name === "add pot") {
-                const newPot = {...formData, user_id: user.id, current_amount: 0};
-                console.log('Creating new pot:', newPot);
-                const data = await addPot(newPot);
+            if (name === "add pot" || name === "add budget" ) {
+                let newData = {};
+                if(name === "add pot"){
+                    newData = {...formData, user_id: user.id, current_amount: 0};
+                    console.log(newData, 'newPot in buttonSubmit')
+                    url = urlBasic + "pots";
+                    console.log(urlBasic, 'urlBasic in buttonSubmit')
+                }
+                else if(name === "add budget"){
+                    newData = {...formData, user_id: user.id};
+                    console.log(newData, 'newPot in buttonSubmit')
+                    url = urlBasic + "budgets";
+                    console.log(urlBasic, 'urlBasic in buttonSubmit')
+                }
+               
+                
+                console.log('Creating new pot:', newData);
+                const data = await sendData(newData, url);
                 console.log('Pot creation completed:', data);
                 if (data.success) {
                     console.log('Refreshing pots list...');
-                    refreshPots();
-                    setIsOpen(false);
+                    renderData();
+                    close?.();
                 } else {
                     console.error('Pot creation failed:', data.message);
                     setError(data.message);
@@ -136,12 +172,13 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                     setError("You have reached the target amount");
                     return;
                 }
-                const data = await addMoney(pot.id, newAmount);
+                const data = await addMoney(pot.id, formData, newAmount);
                 console.log('Pot creation completed:', data);
                 if (data.success) {
                     console.log('Refreshing pots list...');
-                    refreshPots();
+                    renderData();
                     setFormData({amount: 0});
+                    close?.();
                 } else {
                     console.error('Pot creation failed:', data.message);
                     setError(data.message);
@@ -155,9 +192,28 @@ const ButtonSubmit = ({pot, formData, name, setError, refreshPots, user, classNa
                     setError("You cannot withdraw more than you have");
                     return;
                 }
-                await addMoney(pot.id, newAmount);
-                refreshPots();
+                
+                await addMoney(pot.id, formData, newAmount);
+                renderData();
                 setFormData({amount: 0});
+                close?.();
+            }
+            else if(name === "edit pot"){
+                await addMoney(formData.id, formData, formData.current_amount);
+                renderData();
+                close?.();
+            }
+            else if(name === "Yes, Confirm Deletion"){
+                url = urlBasic + "pots";
+                console.log(url, 'url in delete pot')
+                console.log(formData, 'formData in delete pot')
+                const data = await deletePot(formData, url);
+                console.log('Pot deleted successfully:', data);
+                renderData();
+                close?.();
+            }
+            else if(name === "No, Go Back"){
+                close?.();
             }
         } catch (error) {
             console.error(`Error in ${name}:`, error);

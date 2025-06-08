@@ -142,8 +142,10 @@ button:hover {
   width: 100%;
   max-width: 18.8rem;
   text-align: left;
-
    padding-top: 2rem;
+   border-top-right-radius: 16px;
+   border-bottom-right-radius: 16px;
+
 }
 .logo {
   margin-bottom: 2rem;
@@ -210,13 +212,10 @@ button:hover {
 .header button {
  max-width: 128px;
  padding: 1.1em;
- max-width: 128px;
  line-height: 1.5;
 }
-.open_modal {
+header .open_modal {
   max-width: 154px;
-  text-transform: capitalize;
-  padding:1rem 0
 }
 
 /* card desing */
@@ -243,13 +242,14 @@ button:hover {
 }
 .card-header-right-text {
   font-size: 16px;
+  position: relative;
 }
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 .card-body {
   display: flex;
@@ -319,6 +319,9 @@ button:hover {
   gap: 2rem;
   margin-top: 3rem;
 }
+.grid-cols-2 {
+  grid-template-columns: 1fr 2fr;
+}
 .card-btn-container button {
   background-color: #F8F4F0;
   padding: 1.3rem;
@@ -334,8 +337,8 @@ button:hover {
   width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
 }
-
 .modal {
   background: white;
   padding: 2rem;
@@ -418,4 +421,83 @@ button.big-btn {
 }
 .table td.negative {
   color: #201F24;
+}
+
+/* dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  width: 114px;
+  border-radius: 8px;
+  left: -80px;
+  top: 44px;
+}
+button.dropdown-btn {
+  background: white;
+  color: #B3B3B3;
+  font-size: 1.5rem;
+  border-radius: 0;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0 0.5rem;
+}
+li, li button.default-btn {
+  font-size: 1rem;
+  color: #201F24;
+  font-weight: 400;
+  padding: 0.4rem 0.2rem;
+  border-bottom: 1px solid #F2F2F2;
+  background: none;
+  text-align: left;
+}
+li button.default-btn {
+  border-bottom: none;
+}
+li:last-child, li:last-child button {
+  border-bottom:none;
+  color: #C94736;
+}
+li button:hover {
+  background: none;
+}
+h1 {
+  color: #201F24;
+  font-size: 2rem;
+}
+p{
+color: #696868;
+font-size: 1rem;
+}
+li button.delete-btn{
+  background-color: #C94736;
+  color: white;
+}
+li button.back-btn{
+  background-color:transparent;
+  color: #696868;
+  font-weight: 400;
+  font-size: 1rem;
+  padding: 0;
+}
+.donutContainer {
+  width:240px;
+  height:240px;
+  margin: auto;
+}
+
+/* table budget */
+.table-budget td, .table td:first-child{
+  color: #696868;
+  font-size: 1rem;
+  font-weight: 400;
+}
+.table-budget td:last-child{
+  color: #201F24;
+  font-size: 1rem;
+  font-weight: 700;
 }

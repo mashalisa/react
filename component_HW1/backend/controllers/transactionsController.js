@@ -11,8 +11,11 @@ function transactionsController() {
                   
                     if (method === 'getAllTransactions') {
                         result = await transactionsService[method]();
-                    } else {
-                        result = await transactionsService[method](req.params.id)
+                    } else if (method === 'getTransactionByUserId') {
+                        const { userId } = req.params;
+                        result = await transactionsService[method](userId)
+                    } else if (method === 'createNewtransactions') {
+                        result = await transactionsService[method](req.body)
                     }
                     res.status(200).json({
                         success: true,

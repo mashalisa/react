@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize('sql7780500', 'sql7780500', '8YIKyA4Gez', {
+const sequelize = new Sequelize('sql7783229', 'sql7783229', 'X9BmAl7vdy', {
     host: 'sql7.freesqldatabase.com',
     dialect: 'mysql',
     port: 3306,

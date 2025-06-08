@@ -1,20 +1,20 @@
 const sequelize = require('../../configDB/sequelize');
 const User = require('./users');
-const Budjets = require('./budjets');
+const Budgets = require('./budjets');
 const Transaction = require('./transactions');
 const Vault = require('./pots');
 
-// Define associations
-Budjets.hasMany(Transaction, { 
-    foreignKey: 'budjet_id',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-});
-Transaction.belongsTo(Budjets, { 
-    foreignKey: 'budjet_id',
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-});
+// // Define associations
+// Budjets.hasMany(Transaction, { 
+//     foreignKey: 'budjet_id',
+//     onDelete: 'CASCADE',
+//     onUpdate: 'CASCADE'
+// });
+// Transaction.belongsTo(Budjets, { 
+//     foreignKey: 'budjet_id',
+//     onDelete: 'CASCADE',
+//     onUpdate: 'CASCADE'
+// });
 
 // User-Vault associations
 User.hasMany(Vault, { 
@@ -28,10 +28,36 @@ Vault.belongsTo(User, {
     onUpdate: 'CASCADE'
 });
 
+// User-Budgets associations
+User.hasMany(Budgets, { 
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Budgets.belongsTo(User, { 
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Budgets.hasMany(Transaction, { 
+    foreignKey: 'budjet_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Transaction.belongsTo(Budgets, { 
+    foreignKey: 'budjet_id',    
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});     
+Transaction.belongsTo(User, { 
+    foreignKey: 'user_id',    
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+}); 
 module.exports = {
     sequelize,
     User,
-    Budjets,
+    Budgets,
     Transaction,
     Vault
 };
