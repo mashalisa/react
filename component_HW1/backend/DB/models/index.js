@@ -3,6 +3,7 @@ const User = require('./users');
 const Budgets = require('./budjets');
 const Transaction = require('./transactions');
 const Vault = require('./pots');
+const Bills = require('./bills');
 
 // // Define associations
 // Budjets.hasMany(Transaction, { 
@@ -54,10 +55,23 @@ Transaction.belongsTo(User, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
 }); 
+
+// User-Vault associations
+User.hasMany(Bills, { 
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
+Bills.belongsTo(User, { 
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+});
 module.exports = {
     sequelize,
     User,
     Budgets,
     Transaction,
-    Vault
+    Vault,
+    Bills
 };

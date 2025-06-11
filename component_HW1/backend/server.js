@@ -9,6 +9,7 @@ const swaggerSpecs = require('./configDB/swagger');
 const budjetsRoutes = require('./routers/budjetsRoutes');
 const transactionsRoutes = require('./routers/transactionsRoutes');
 const potsRoutes = require('./routers/potRouters');
+const billsRoutes = require('./routers/billsRouters');
 const app = express();
 
 // CORS configuration to allow all origins
@@ -39,6 +40,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/budgets', budjetsRoutes);
 app.use('/api/transactions', transactionsRoutes);
 app.use('/api/pots', potsRoutes);
+app.use('/api/bills', billsRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
