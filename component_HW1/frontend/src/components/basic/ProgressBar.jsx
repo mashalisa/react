@@ -2,29 +2,20 @@ import {useState, useEffect} from 'react'
 
 
 
-const ProgressBar = ({ pot, colorNumber, newAmount, formData }) => {
+const ProgressBar = ({ total, current_amount, colorNumber, newAmount, formData }) => {
+    console.log(total, 'total in progress bar')
+    console.log(current_amount, 'current_amount in progress bar')
     console.log(newAmount, 'newAmount in progress bar')
     console.log(formData, 'formData in progress bar')
-    console.log(pot, 'pot in progress bar')
+    // console.log(pot, 'pot in progress bar')
     const [progress, setProgress] = useState(0)
     const [progressNew, setProgressNew] = useState(0)
-    // let usage = 0
-    // let usageNew = 0
-    // if (newAmount){
-        
-    //     usage = Number(((newAmount / pot.goal_amount) * 100).toFixed(2));
-    //     console.log(usage, 'usage in progress bar if newAmount')
-    //     usageNew = Number(((formData / pot.goal_amount) * 100).toFixed(2));
-    //     console.log(usageNew, 'usageNew in progress bar if newAmount')
-    // } else {
-    //     usage = Number(((pot.current_amount / pot.goal_amount) * 100).toFixed(2));
-    //     console.log(usage, 'usage in progress bar if pot.current_amount')
-    // }
+   
 
     useEffect(() => {
 
-        const goal = parseFloat(pot.goal_amount);
-        const current = parseFloat(pot.current_amount);
+        const goal = parseFloat(total);
+        const current = parseFloat(current_amount);
         const newVal = parseFloat(newAmount || 0);
         const formVal = parseFloat(formData || 0); // If formData is a number, else adjust
 
@@ -40,55 +31,9 @@ const ProgressBar = ({ pot, colorNumber, newAmount, formData }) => {
 
             setProgress(usage.toFixed(2));
             setProgressNew(usageNew.toFixed(2));
-    //     if (newAmount && newAmount < 0) {
-    //         setProgress(0)
-    //         setProgressNew(0)
-    //         console.log(progress, 'progress in progress bar if newAmount < 0')
-    //         console.log(progressNew, 'progressNew in progress bar if newAmount < 0')
-    //     }
-    //     else {
-    //         if (newAmount && newAmount > pot.goal_amount) {
-    //             setProgress(100)
-    //             setProgressNew(100)
-    //             console.log(progress, 'progress in progress bar if newAmount > pot.goal_amount')
-    //             console.log(progressNew, 'progressNew in progress bar if newAmount > pot.goal_amount')
-    //         }
-    //         else {
-    //             setProgress(usage)
-    //             setProgressNew(usageNew)
-    //             console.log(progress, 'progress in progress bar if newAmount > pot.goal_amount')
-    //             console.log(progressNew, 'progressNew in progress bar if newAmount > pot.goal_amount')
-
-    //     }
-    // }
-    }, [pot.current_amount, pot.goal_amount, newAmount])
-        // if (newAmount || formData){
-        //     if (newAmount < pot.goal_amount){
-        //         if(newAmount < 0) {
-        //             setProgress(0)
-        //             setProgressNew(0)
-        //             console.log(progress, 'progress in progress bar if newAmount < 0')
-        //             console.log(progressNew, 'progressNew in progress bar if newAmount < 0')
-        //         }
-        //         else {
-        //             setProgress(usage)
-        //             setProgressNew(usageNew)
-        //         }
-              
-        //     }
-        //     else {
-        //         setProgress(100)
-        //     }
-        // }
-        // else {
-        //     if (pot.current_amount < pot.goal_amount) {
-        //         setProgress(usage)
-        //     }
-        //     else {
-        //         setProgress(100)
-        //     }
-        // }
-    // }, [pot.current_amount, pot.goal_amount, newAmount])
+   
+    }, [current_amount, total, newAmount])
+      
     return (
         <>
          
@@ -102,7 +47,7 @@ const ProgressBar = ({ pot, colorNumber, newAmount, formData }) => {
             {progress}%
         </div> }
         {<div className="progress-label label-target">
-            Target of ${pot.goal_amount}
+            Target of ${total}
         </div> }
         </div> }
         

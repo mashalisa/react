@@ -7,21 +7,15 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import Card from '../basic/Card'
 import DonutChart from '../basic/DonutChart'
+import { getData, sendData, eidtData, deleteData} from '../../config/ManageData'
+import colorBar from '../../config/ThemeColors'
 
-async function getBudgets(userId){
-    if (!userId) {
-        throw new Error('User ID is required');
-    }
-    const response = await fetch(`http://localhost:3000/api/budgets/${userId}/`)
-    console.log(response, 'response in budgets')
-    const data = await response.json()
-    if(response.ok){
-        return data
-    }else{
-        throw new Error('Failed to fetch budgets')
-    }
+
+const getBudgets = async (userId) => {
+   const data = await getData(userId, 'budgets')
+  return data
+  console.log(data, 'data in getBudgets')
 }
-
 
 const Budgets =  ({page}) => {
     const {user}  = useContext(AuthContext)
@@ -29,26 +23,8 @@ const Budgets =  ({page}) => {
     const [formData, setFormData] = useState({})
     const [error, setError] = useState(false)
 
-    const colorBar = [
-        {'color': 'cyan', 'number': '#00FFFF', isUsed: false},
-        {'color': 'navy', 'number': '#000080', isUsed: false},
-        {'color': 'magenta', 'number': '#FF00FF', isUsed: false},
-        {'color': 'fuchsia', 'number': '#FF00FF', isUsed: false},
-        {'color': 'purple', 'number': '#800080', isUsed: false},
-        {'color': 'pink', 'number': '#FFC0CB', isUsed: false},
-        {'color': 'red', 'number': '#FF0000', isUsed: false},
-        {'color': 'orange', 'number': '#FFA500', isUsed: false},
-        {'color': 'yellow', 'number': '#FFFF00', isUsed: false},
-        {'color': 'green', 'number': '#008000', isUsed: false},
-        {'color': 'blue', 'number': '#0000FF', isUsed: false},
-        {'color': 'brown', 'number': '#A52A2A', isUsed: false},
-        {'color': 'gray', 'number': '#808080', isUsed: false},
-        {'color': 'black', 'number': '#000000', isUsed: false},
-        {'color': 'white', 'number': '#FFFFFF', isUsed: false},
-        {'color': 'army', 'number': '#4B5320', isUsed: false},
-        {'color': 'teal', 'number': '#008080', isUsed: false}
-    ]
     const [colors, setColors] = useState(colorBar);
+
     const categories = [
         { value: 'entertainment', label: 'Entertainment' },
         { value: 'bills', label: 'Bills' },
@@ -58,9 +34,26 @@ const Budgets =  ({page}) => {
         { value: 'shopping', label: 'Shopping' },
         { value: 'other', label: 'Other' },
       ];
+
+
+      
+    const renderBudgets = () => {
+      console.log(user, 'user in renderBudgets')
+      if (user && user.id) {
+        getBudgets(user.id).then(data => {
+          setBudgets(data.data);
+        }).catch(error => {
+          console.log(error, 'error in budgets')
+        });
+      }
+      else {
+          console.log('user not logged in')
+      }
+    };
+
     function handleUserInput(e) {
         const { value, name} = e.target
-        setFormData({...formData, [name]: value})
+        setFormData({...formData, [name]: value, user_id: user.id})
       }
       const handleChange = (selectedOption, fieldName) => {
         const updatedColors = colors.map((color) => {
@@ -82,44 +75,50 @@ const Budgets =  ({page}) => {
 
     console.log(user, 'user in pots')
 
-    const renderBudgets = () => {
-        console.log(user, 'user in refreshPots')
-        if (user && user.id) {
-            getBudgets(user.id).then(data => {
-                setBudgets(data.data);
-                console.log(data, 'budgets in budgets')
-          }).catch(error => {
-            console.log(error, 'error in pots')
-          });
-        }
-        else {
-            console.log('user not logged in')
-        }
-      };
-      const handleClick = (e) => {
+      const addNewBudget = async (e, close) => {
         e.preventDefault()
-        //   onClick(); // run the external function
-        
-          console.log(formData, 'formData in button after click')
-        
+        try {
+          const data = await sendData(formData, 'budgets');
+          console.log('Budget creation completed:', data);
+      
+          if (data.success) {
+            console.log('Refreshing data list...');
+            renderBudgets();
+            close?.();
+          } else {
+            console.error('Data creation failed:', data.message);
+            setError(data.message);
+          }
+        } catch (err) {
+          console.error('Error in addNewBudget:', err);
+          setError(err.message || 'Something went wrong');
+        }      
       
       };
+
       useEffect(() => {
         renderBudgets()
+        
       }, [ user])
+
+      useEffect(() => {
+        console.log('Updated budgets:', budgets);
+      }, [budgets]);
+
+ 
     return (
         <>
         <Header page={page}>
-      <ModalButton btnName="+ Add New Budget" className='open_modal'>
+      <ModalButton btnName="+ Add New Budget" className='open_modal' style={{maxWidth: '142px'}} onOpen={() => {setError(''); }}>
                                 {({ close }) => (
                                      <>
                                      <h2>Add New Pot</h2>
                                      <p>Create a pot to set savings targets. These can help keep you on track as you save for special purchases.</p>
-                                    <form onSubmit={handleClick}>
+                                    <form>
                                         <Select name="category"  value={formData.category}  onChange={(selectedOption) => handleChange(selectedOption, 'category')} categories={categories} />
                                       <InputField type="number" name="max_amount" label_name='Maximum Spend' value={formData?.max_amount || ''} onChange={handleUserInput} placeholder='$'/>
                                       <Select name="theme" colors={colors} value={formData.theme} onChange={(selectedOption) => handleChange(selectedOption, 'theme')} colorBar={colorBar} />
-                                     <ButtonSubmit   close={close} className='big-btn' formData={formData} name='add budget' setError={setError} renderData={renderBudgets} user={user}/>
+                                     <ButtonSubmit    className='big-btn'  name='add budget' onClick={(e) => addNewBudget(e, close)}/>
                                     </form> 
                                      {error && <p>{error}</p>}
                                     </>
@@ -129,7 +128,7 @@ const Budgets =  ({page}) => {
            
       </Header>
       <div className="cards-container grid-cols-2">
-        <Card>
+        <Card className='card' key={budgets.id} data={budgets}>
        
   
         <DonutChart
@@ -156,8 +155,8 @@ const Budgets =  ({page}) => {
                             </div> */}
                           
                            
-                                <tr>
-                                    <td>{budget.category}</td>
+                                <tr >
+                                    <td ><span  style={{ "--theme-color": budget.theme }}>{budget.category}</span></td>
                                     <td> `of ${budget.max_amount}`</td>
                                </tr>
                          

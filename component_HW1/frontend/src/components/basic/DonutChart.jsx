@@ -48,7 +48,7 @@ const DonutChart = ({ data, theme}) => {
           y="50%"
           textAnchor="middle"
           dominantBaseline="middle"
-          fontSize={24}
+          fontSize={32}
           fontWeight="bold"
         >
           ${total}

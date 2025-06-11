@@ -321,6 +321,7 @@ header .open_modal {
 }
 .grid-cols-2 {
   grid-template-columns: 1fr 2fr;
+  align-items: start;
 }
 .card-btn-container button {
   background-color: #F8F4F0;
@@ -401,6 +402,7 @@ button.big-btn {
   color: #696868;
   font-size: 0.8rem;
   padding: 1rem 0;
+  font-weight: 400;
 }
 .table td:first-child, .table td:last-child {
   font-size: 1rem;
@@ -501,3 +503,49 @@ li button.back-btn{
   font-size: 1rem;
   font-weight: 700;
 }
+
+.table span {
+  padding-left: 1rem;
+  position: relative;
+}
+table span::after {
+  content: "";
+  width: 4px;
+  height: 21px;
+  background: var(--theme-color);
+  position: absolute;
+  left: 0;
+  border-radius: 24%;
+}
+.grid-cols-2 h3{
+ margin-top:3rem;
+}
+
+/* bills page */
+.card-black img {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(96%) saturate(25%) hue-rotate(177deg) brightness(105%) contrast(100%);
+  margin-bottom: 3rem;
+}
+.card-black p, .card-black h1{
+  color:white;
+  margin:0;
+}
+.text {
+  margin-top:2rem
+}
+.card-black {
+  text-align: left;
+  padding: 2rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+}
+.table td.soon:first-child, .table td.soon:last-child, td.soon {
+  color: #C94736;
+}
+.table td.paid:first-child, .table td.paid:last-child, td.paid {
+  color: #277C78;
+}
+.table td img {
+  max-width: 14px;
+  margin: 0 0.5rem;
+  }
