@@ -2,7 +2,7 @@ import ProgressBar from './ProgressBar';
 import Button from './buttonOLD';
 
 
-const Card = ({data, children}) => {
+const Card = ({data, children, style, className}) => {
     console.log(data, 'usage in card')
    
     
@@ -10,7 +10,7 @@ const Card = ({data, children}) => {
 
 
     return (
-        <div className="card">
+        <div className={className} style={style}>
             {children}
            
         </div>

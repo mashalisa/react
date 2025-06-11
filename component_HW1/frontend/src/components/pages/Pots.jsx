@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
-import CardOLD from '../basic/CardOLD'
 import Card from '../basic/Card'
 import ProgressBar from '../basic/ProgressBar'
-import Button from  '../basic/buttonOLD'
 import Button2 from '../basic/button'
 import Modal from '../basic/Modal'
 import InputField from '../form/InputField'
@@ -12,20 +10,15 @@ import ModalButton from '../basic/ModalButton'
 import Select from '../form/Select'
 import Header from '../layout/Header'
 import DropDownMenu from '../basic/DropDownMenu'
-async function getPots(userId){
-    if (!userId) {
-        throw new Error('User ID is required');
-    }
-    const response = await fetch(`http://localhost:3000/api/pots/${userId}/`)
-    // const response = await fetch(`https://react-p8qv.onrender.com/api/pots/${userId}/`)
-    console.log(response, 'response in pots')
-    const data = await response.json()
-    if(response.ok){
-        return data
-    }else{
-        throw new Error('Failed to fetch pots')
-    }
+import { getData, sendData, eidtData, deleteData} from '../../config/ManageData'
+import colorBar from '../../config/ThemeColors'
+
+const getPots = async (userId) => {
+    const data = await getData(userId, 'pots')
+    return data
+    console.log(data, 'data in getPots')
 }
+
 
 
 
@@ -37,31 +30,15 @@ const Pots = (page) => {
     const [error, setError] = useState(false)
 
      const [newAmount, setNewAmount] = useState(0)
-     const [isOpen, setIsOpen] = useState(false);
-     const colorBar = [
-        {'color': 'cyan', 'number': '#00FFFF', isUsed: false},
-        {'color': 'navy', 'number': '#000080', isUsed: false},
-        {'color': 'magenta', 'number': '#FF00FF', isUsed: false},
-        {'color': 'fuchsia', 'number': '#FF00FF', isUsed: false},
-        {'color': 'purple', 'number': '#800080', isUsed: false},
-        {'color': 'pink', 'number': '#FFC0CB', isUsed: false},
-        {'color': 'red', 'number': '#FF0000', isUsed: false},
-        {'color': 'orange', 'number': '#FFA500', isUsed: false},
-        {'color': 'yellow', 'number': '#FFFF00', isUsed: false},
-        {'color': 'green', 'number': '#008000', isUsed: false},
-        {'color': 'blue', 'number': '#0000FF', isUsed: false},
-        {'color': 'brown', 'number': '#A52A2A', isUsed: false},
-        {'color': 'gray', 'number': '#808080', isUsed: false},
-        {'color': 'black', 'number': '#000000', isUsed: false},
-        {'color': 'white', 'number': '#FFFFFF', isUsed: false},
-        {'color': 'army', 'number': '#4B5320', isUsed: false},
-        {'color': 'teal', 'number': '#008080', isUsed: false}
-    ]
+    const [isOpen, setIsOpen] = useState(false);
+
     const [colors, setColors] = useState(colorBar);
+
     function handleUserInput(e) {
         const { value, name} = e.target
-        setFormData({...formData, [name]: value})
+        setFormData({...formData, [name]: value, user_id: user.id})
       }
+
       const handleChange = (selectedOption) => {
         const updatedColors = colors.map((color) => {
             console.log(color, 'color in handleChange');
@@ -101,34 +78,47 @@ const Pots = (page) => {
         refreshPots();
     }, [user])
    
-    // useEffect(() => {
-    //     console.log(pots, 'pots in pots render')
-    // }, [pots])
-
-
-  
-
-    const handleClick = (e) => {
-        e.preventDefault()
-        //   onClick(); // run the external function
-        
-          console.log(formData, 'formData in button after click')
-        
+    useEffect(() => {
+        console.log(formData, 'Updated formData');
+      }, [formData]);
+      useEffect(() => {
       
+      }, [error]);
+
+    const addNewPot = async (e, close) => {
+        e.preventDefault()         
+       
+        const data = await sendData(formData, 'pots');
+        console.log('Pot creation completed:', data);
+        if (data.success) {
+            console.log('Refreshing data list...');
+            refreshPots();
+            close?.();
+        } else {
+            console.error('data creation failed:', data.message);
+            setError(data.message);
+        }          
       };
+
+
+
+      
     return (
       <>
       <Header page={page.page}>
-      <ModalButton btnName="+ Add New Pot">
-                                {({ close }) => (
+      <ModalButton btnName="+ Add New Pot" onOpen={() => {setError(''); }}>
+                                {({ close }) =>
+                                   
+                                (
+                                     
                                      <>
                                      <h2>Add New Pot</h2>
                                      <p>Create a pot to set savings targets. These can help keep you on track as you save for special purchases.</p>
-                                    <form onSubmit={handleClick}>
+                                    <form >
                                       <InputField type="text" name="name" label_name='Pot Name' value={formData?.name || ''} onChange={handleUserInput} />
                                       <InputField type="number" name="goal_amount" label_name='Target' value={formData?.goal_amount || ''} onChange={handleUserInput} placeholder='$'/>
                                       <Select name="theme"  colors={colors} value={formData.theme}  onChange={handleChange } colorBar={colorBar} />
-                                     <ButtonSubmit  close={close} className='big-btn' formData={formData} name='add pot' setError={setError} renderData={refreshPots} user={user}/>
+                                     <ButtonSubmit  onClick={(e) => addNewPot(e, close)} close={close} className='big-btn' name='add pot' />
                                     </form>
                                     {error && <p>{error}</p>}
                                     </>
@@ -144,24 +134,100 @@ const Pots = (page) => {
 
         
        {pots.map((pot) => {
-        
+           
             console.log(pot, 'pot1 in pots')
             const colorBarPot = colorBar.find(color => color.color === pot.theme)
             console.log(colorBarPot, 'colorBarPot in progress bar')
             console.log(colorBarPot.number, 'colorBarPot.number in progress bar') 
 
-            // let newAmount = pot.current_amount
-            // if(formData.amount > 0){
-            // newAmount = parseFloat(pot.current_amount) + parseFloat(formData.amount)
-            // }
-            // else{
-            //      newAmount = pot.current_amount
-            // }
+
+            const handleClickDelete = async (e, close, potId) => {
+                e.preventDefault();
+                console.log('potId', 'potId in handleClickDelete')
+                try {
+                    const data = await deleteData(pot.id,  'pots');
+                    // const data = await eidtData(pot.id, formData, formData.current_amount);
+                    console.log('Pot creation completed:', data);
+                    if (data.success) {
+                        console.log('Refreshing pots list...');
+                        refreshPots();
+                        setFormData({amount: 0});
+                        close?.();
+                    } else {
+                        console.error('Pot creation failed:', data.message);
+                        setError(data.message);
+                    }
+                } catch (error) {
+                    setError(error.message);
+                }
+            }
+
+            const handleClickEditMoney = async (e, close, action, formData) => {
+                e.preventDefault();
+                console.log('formData', 'formData in handleClickAddMoney')
+                const amount = parseFloat(formData.amount) || 0;
+                const currentAmount = parseFloat(pot.current_amount) || 0;
+                let newAmount = 0;
+                if (action === 'add'){
+                     newAmount = currentAmount + amount;
+                }
+                else if (action === 'withdraw'){
+                     newAmount = currentAmount - amount;
+                }
+                
+                
+                if (newAmount > pot.goal_amount){
+                  
+                    newAmount = currentAmount
+                    setFormData({...formData, current_amount: currentAmount.toFixed(2)})
+                    setError('Amount is greater than the goal amount')
+                    console.log(error, 'newAmount > pot.goal_amount)')
+                    return;
+                }
+                else if (newAmount < 0){
+                    setError('Amount is greater than the goal amount')
+                    newAmount = currentAmount
+                    setFormData({...formData, current_amount: currentAmount.toFixed(2)})
+                }
+                else{
+                    if (action === 'edit'){
+                        setFormData({...formData})
+                    }
+                    else{
+                        formData.current_amount = newAmount.toFixed(2)
+                        setFormData({...formData})
+                    }
+                    console.log(formData, 'formData in handleClickAddMoney')
+                
+                    try {
+                        const data = await eidtData(pot.id, formData, 'pots');
+                        // const data = await eidtData(pot.id, formData, formData.current_amount);
+                        console.log('Pot creation completed:', data);
+                        if (data.success) {
+                            console.log('Refreshing pots list...');
+                            refreshPots();
+                            setFormData({amount: 0});
+                            close?.();
+                        } else {
+                            console.error('Pot creation failed:', data.message);
+                            setError(data.message);
+                        }
+                    } catch (error) {
+                        setError(error.message);
+                    }
+                }
+                    return;
+                
+              }
+
+           
+
+        
         return (
             <>
-             {/* // <Card pot={pot}  /> */}
+           
             
-            <Card  key={pot.id} data={pot} >
+            <Card  key={pot.id} data={pot} className='card'>
                 <div className="card-header">
                     <div className="card-header-left">
                         <h3><span className="theme-color" style={{backgroundColor: colorBarPot.number}}></span>{pot.name}</h3>
@@ -175,7 +241,7 @@ const Pots = (page) => {
                                 <>
                                 <ul>
                                     <li>
-                                    <ModalButton btnName="Edit">
+                                    <ModalButton btnName="Edit" onOpen={() => {setError(''); }}>
                                         
                                          {({ close }) => {
                                        
@@ -200,11 +266,11 @@ const Pots = (page) => {
                                                     <>    
                                             
                                                  <h1>{pot.id}</h1>
-                                                <form onSubmit={handleClick}>
+                                                <form >
                                                 <InputField type="text" name="name" label_name='Pot Name' value={editData?.name || ''} onChange={handleEditInput} />
                                                 <InputField type="number" name="goal_amount" label_name='Target' value={editData?.goal_amount || ''} onChange={handleEditInput} placeholder='$'/>
                                                 <Select name="theme"   value={editData.theme}  onChange={handleEditChange } colorBar={colorBar} />
-                                                <ButtonSubmit  close={close} className='big-btn' formData={editData} name='edit pot' setError={setError} renderData={refreshPots} user={user}/>
+                                                <ButtonSubmit   className='big-btn'  name='edit pot' onClick={(e) => handleClickEditMoney(e, close, 'edit', editData)} />
                                                 </form>
                                                 {error && <p>{error}</p>}
                                                  </>
@@ -221,15 +287,15 @@ const Pots = (page) => {
                                     </li>
  
                                 <li>
-                                     <ModalButton btnName="Delete Pot">
+                                     <ModalButton btnName="Delete Pot" onOpen={() => {setError(''); }}>
                                 {({ close }) => (
                                      <>
                                    <h1>Delete {pot.name}?</h1>
                                    <p>Are you sure you want to delete this pot? This action cannot be reversed, and all the data inside it will be removed forever.</p>
-                                    <form onSubmit={handleClick}>
+                                    <form >
                                     
-                                     <ButtonSubmit  close={close} className='big-btn delete-btn' formData={pot.id} name='Yes, Confirm Deletion' setError={setError} renderData={refreshPots} user={user}/>
-                                     <ButtonSubmit  close={close} className='big-btn back-btn'  handleClick={close} name='No, Go Back'/>
+                                     <ButtonSubmit  close={close} className='big-btn delete-btn' name='Yes, Confirm Deletion' onClick={(e) => handleClickDelete(e, close, pot.id)}/>
+                                     <ButtonSubmit  close={close} className='big-btn back-btn'  onClick={close} name='No, Go Back'/>
                                     </form>
                                     {error && <p>{error}</p>}
                                     </>
@@ -248,13 +314,13 @@ const Pots = (page) => {
                     <p>Total Saved</p>
                     <h6>${pot.current_amount}</h6>
                 </div>
-                <ProgressBar pot={pot} colorNumber={colorBarPot["number"]} />
+                <ProgressBar total={pot.goal_amount} current_amount={pot.current_amount} colorNumber={colorBarPot["number"]} />
                 {/* <Button btnName="Add Money" pot={pot} />
                 <Button btnName="Withdraw" pot={pot} /> */}
 
                     <div className="card-btn-container">
 
-                            <ModalButton btnName="Add Money">
+                            <ModalButton btnName="Add Money" onOpen={() => {setError(''); }}>
                                 {({ close }) => (
                                     <>
                                      <h2>Add to {pot.name}</h2>
@@ -271,17 +337,19 @@ const Pots = (page) => {
                                                 }
                                     </h6>
                                     </div>
-                                    <ProgressBar formData={formData.amount} newAmount={parseFloat(pot.current_amount) + parseFloat(formData.amount)} pot={pot} colorNumber={colorBarPot["number"]} />
-                                     <form onSubmit={handleClick}>
+                                    <ProgressBar formData={formData.amount} newAmount={parseFloat(pot.current_amount) + parseFloat(formData.amount)} total={pot.goal_amount} current_amount={pot.current_amount} colorNumber={colorBarPot["number"]} />
+                                     <form >
                                       <InputField type="number" name="amount" label_name='Amount to add' value={formData?.amount || ''} onChange={handleUserInput} placeholder='$' />
-                                    <ButtonSubmit  close={close} pot={pot} formData={formData} name='confirm addition' setFormData={setFormData} setError={setError} renderData={refreshPots}/>
+                                    <ButtonSubmit onClick={(e) => handleClickEditMoney(e, close, 'add', formData)}  name='confirm addition' />
+                                       
                                     </form>
+                                    {error && <p>{error}</p>}
                                     </>
                                    
                                     
                                 )}
                              </ModalButton>
-                             <ModalButton btnName="Withdraw">
+                             <ModalButton btnName="Withdraw" onOpen={() => {setError(''); }}>
                                 {({ close }) => (
                                      <>
                                      <h2>Withdraw from  {pot.name}</h2>
@@ -298,10 +366,11 @@ const Pots = (page) => {
                                                 }
                                     </h6>
                                     </div>
-                                    <ProgressBar formData={formData.amount} newAmount={parseFloat(pot.current_amount) - parseFloat(formData.amount)} pot={pot} colorNumber={colorBarPot["number"]} />
-                                    <form onSubmit={handleClick}>
+                                    <ProgressBar formData={formData.amount} newAmount={parseFloat(pot.current_amount) - parseFloat(formData.amount)} total={pot.goal_amount} current_amount={pot.current_amount} colorNumber={colorBarPot["number"]} />
+                                    <form >
                                       <InputField type="number" name="amount" value={formData?.amount || ''} onChange={handleUserInput} />
-                                    <ButtonSubmit  close={close} pot={pot} formData={formData} name='confirm withdraw' setFormData={setFormData} setError={setError} renderData={refreshPots} />
+                                    <ButtonSubmit  onClick={(e) => handleClickEditMoney(e, close, 'withdraw', formData)} name='confirm withdrawal' />
+                                    {error && <p>{error}</p>}
                                     </form>
                                     </>
                                 )}
