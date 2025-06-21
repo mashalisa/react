@@ -19,8 +19,8 @@ const Transaction = sequelize.define('Transaction', {
         type: DataTypes.DATE,
         allowNull: false    
     },
-    category: {
-        type: DataTypes.ENUM('entertainment', 'bills', 'groceries', 'dining out', 'transportation', 'shopping', 'other'),
+    CategoryId: {
+        type: DataTypes.UUID,
         allowNull: false
     },
     budget_id: {
@@ -34,7 +34,7 @@ const Transaction = sequelize.define('Transaction', {
     recipient_image_url: {
         type: DataTypes.STRING, 
         allowNull: true
-      },
+    }
 }, {
     tableName: 'transactions',
     timestamps: true
