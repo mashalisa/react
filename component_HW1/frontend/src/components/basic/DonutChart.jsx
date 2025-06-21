@@ -1,6 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer} from 'recharts';
 
-const DonutChart = ({ data, theme}) => {
+const DonutChart = ({ data, transactionSpentAll}) => {
     const colorBar = [
         {'color': 'cyan', 'number': '#00FFFF', isUsed: false},
         {'color': 'navy', 'number': '#000080', isUsed: false},
@@ -21,7 +21,8 @@ const DonutChart = ({ data, theme}) => {
         {'color': 'teal', 'number': '#008080', isUsed: false}
     ]
     console.log(data, 'data in donut chart')
-    const themeColor = colorBar.find(c => c.color === theme)?.number || '#CCCCCC';
+    console.log(transactionSpentAll, 'transactionSpentAll in donut chart')
+    const themeColor = colorBar.find(c => c.color === data.theme)?.number || '#CCCCCC';
     const total = data.reduce((sum, entry) => sum + entry.value, 0);
   
     return (
@@ -51,7 +52,8 @@ const DonutChart = ({ data, theme}) => {
           fontSize={32}
           fontWeight="bold"
         >
-          ${total}
+           ${transactionSpentAll} 
+          
         </text>
         <text
           x="50%"
@@ -61,7 +63,7 @@ const DonutChart = ({ data, theme}) => {
           fontSize={12}
           fill="#666"
         >
-          {/* of $975 limit */}
+        ${total}
         </text>
       </PieChart>
         </ResponsiveContainer>

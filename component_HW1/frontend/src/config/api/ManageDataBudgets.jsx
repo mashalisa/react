@@ -1,33 +1,8 @@
-// const urlBasic = "http://localhost:3000/api/";
-const urlBasic = "https://react-p8qv.onrender.com/api/";
+const urlBasic = "http://localhost:3000/api/";
+// const urlBasic = "https://react-p8qv.onrender.com/api/";
 
 
-// const urlAuth = "http://localhost:3000/api/auth/";
-const urlAuth = "https://react-p8qv.onrender.com/api/auth/";
-
-export async function getLogin(formData, path)  {
-    let url = urlAuth + path;
-    console.log(formData, 'formData')
-    console.log(url, 'url')
-    const response  = await fetch(url, {
-      method: "POST",                      
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),        
-    });
-  
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-      
-    }
-  
-    const result = await response.json(); 
-          // parse JSON response
-    return result; 
-  };
-
-export async function deleteData(itemId, path){
+export async function deleteBudget(itemId, path){
     console.log(itemId, 'itemId in deleteData')
     console.log(path, 'path in deleteData')
     try {
@@ -47,7 +22,7 @@ export async function deleteData(itemId, path){
 }
 
 
-export  async function eidtData(potId, formData, path){
+export  async function editBudget(potId, formData, path){
     if (!potId) {
         throw new Error('potId ID is required');
     }
@@ -76,7 +51,7 @@ export  async function eidtData(potId, formData, path){
     
 }
 
-export async function sendData(newData,path){
+export async function createNewBudget(newData,path){
     const url = urlBasic + path;
     console.log('Starting sendData with data:', newData);
     console.log(url, 'url in sendData')
@@ -106,7 +81,7 @@ export async function sendData(newData,path){
         throw error;
     }
 }
-export async function getData(userId, path){
+export async function getBudgetsByUserID(userId, path){
     if (!userId) {
         throw new Error('User ID is required');
     }
@@ -114,6 +89,30 @@ export async function getData(userId, path){
     const response = await fetch(url)
     // const response = await fetch(`https://react-p8qv.onrender.com/api/pots/${userId}/`)
     console.log(response, 'response in pots')
+    const data = await response.json()
+    if(response.ok){
+        return data
+    }else{
+        throw new Error('Failed to fetch pots')
+    }
+}
+
+export async function getCategories(){
+   
+    const url = urlBasic + 'categories';
+    const response = await fetch(url)
+    console.log(response, 'response in categories')
+    const data = await response.json()
+    if(response.ok){
+        return data
+    }else{
+        throw new Error('Failed to fetch pots')
+    }
+}
+
+export async function getTransactionsByBudgetId(userId){       
+    const url = urlBasic + 'transactions/budget/' + userId;
+    const response = await fetch(url)
     const data = await response.json()
     if(response.ok){
         return data
