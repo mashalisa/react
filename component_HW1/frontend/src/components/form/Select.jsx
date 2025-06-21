@@ -36,7 +36,7 @@ const Select = ({ name, value, onChange, colorBar, categories, colors}) => {
       value: color.color,
       label: color.color,
       color: color.number, // Assuming this is a color code like 'rgb(255, 0, 0)'
-      isDisabled: colors.some(c => c.color === color.color && c.isUsed),
+      // isDisabled: colors.some(c => c.color === color.color && c.isUsed),
     }));
    
   }
