@@ -7,8 +7,8 @@ const Budgets = sequelize.define('Budgets', {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4
     },
-    category: {
-        type: DataTypes.ENUM('entertainment', 'bills', 'groceries', 'dining out', 'transportation', 'shopping', 'other'),
+    category_id: {
+        type: DataTypes.UUID,
         allowNull: false
     },
     max_amount: {
@@ -22,6 +22,11 @@ const Budgets = sequelize.define('Budgets', {
     user_id: {
         type: DataTypes.UUID,
         allowNull: false
+    },
+    is_used: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     tableName: 'budgets',

@@ -109,7 +109,7 @@ const getVaultById = async (id) => {
 // Add a new vault
 const addNewVault = async (vaultData) => {
     console.log('Service: Adding new vault with data:', vaultData);
-    const {user_id, name, goal_amount, theme, current_amount} = vaultData;
+    const {user_id, name, goal_amount, theme, current_amount, is_used} = vaultData;
     
     // Check if a vault with the same name exists for this user
     const exists = await Vault.findOne({

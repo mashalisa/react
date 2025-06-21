@@ -10,6 +10,7 @@ const budjetsRoutes = require('./routers/budjetsRoutes');
 const transactionsRoutes = require('./routers/transactionsRoutes');
 const potsRoutes = require('./routers/potRouters');
 const billsRoutes = require('./routers/billsRouters');
+const categoryRoutes = require('./routers/categoryRouters');
 const app = express();
 
 // CORS configuration to allow all origins
@@ -41,6 +42,7 @@ app.use('/api/budgets', budjetsRoutes);
 app.use('/api/transactions', transactionsRoutes);
 app.use('/api/pots', potsRoutes);
 app.use('/api/bills', billsRoutes);
+app.use('/api/categories', categoryRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
