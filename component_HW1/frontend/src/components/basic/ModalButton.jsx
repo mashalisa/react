@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Button from './button';
 import Modal from './Modal';
 
-const ModalButton = ({ btnName, children, className, style, onOpen }) => {
+const ModalButton = ({ btnName, children, className, style, onOpen, onClose }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   
@@ -14,8 +14,13 @@ const ModalButton = ({ btnName, children, className, style, onOpen }) => {
         onOpen(); // only call when transitioning to open
       }
     }
+    else if (!isOpen && wasOpen.current) {
+      if (typeof onClose === 'function') {
+        onClose(); // only call when transitioning to close
+      }
+    }
     wasOpen.current = isOpen;
-  }, [isOpen, onOpen]);
+  }, [isOpen, onOpen, onClose]);
   
 
   return (

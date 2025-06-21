@@ -7,11 +7,14 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import InputField from '../form/InputField'
 import ButtonSubmit from "../basic/ButtonSubmit"
-import { getData, sendData, eidtData, deleteData} from '../../config/ManageData'
+import { getBillsByUserID, createNewBill, editBill, deleteBill} from '../../config/api/ManageDataBills'
+import { useForm } from '../../hooks/useForm'
+import { useDispatch, useSelector } from 'react-redux'
+import { setRecurringBills, addRecurringBill } from '../../store/billsStore'
 
 
 const getBills = async (userId) => {
-    const data = await getData(userId, 'bills')
+    const data = await getBillsByUserID(userId, 'bills')
    return data
    console.log(data, 'data in getBills')
  }
@@ -24,19 +27,18 @@ const RecurringBills = ({page}) => {
 
     const [bills, setBills] = useState([])
     const {user}  = useContext(AuthContext)
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData, handleInput] = useForm({user_id: user.id });
     const [error, setError] = useState(null)
-
-    function handleUserInput(e) {
-        const { value, name} = e.target
-        setFormData({...formData, [name]: value, user_id: user.id})
-      }
+    const dispatch = useDispatch()
+    const recurringBills = useSelector(state => state.recurringBills.recurringBills)
+    console.log(recurringBills, 'recurringBills in RecurringBills')
    
     const renderBills = () => {
         console.log(user, 'user in refreshPots')
         if (user && user.id) {
             getBills(user.id).then(data => {
-                setBills(data.data);
+                // setBills(data.data);
+                dispatch(setRecurringBills(data.data))
                 console.log(data, 'bills in bills')
           }).catch(error => {
             console.log(error, 'error in bills')
@@ -52,11 +54,13 @@ const RecurringBills = ({page}) => {
  const addNewaddNewBill = async (e, close) => {
     e.preventDefault()
     try {
-      const data = await sendData(formData, 'bills');
+      const data = await createNewBill(formData, 'bills');
       console.log('Bill creation completed:', data);
   
       if (data.success) {
         console.log('Refreshing data list...');
+     
+        dispatch(addRecurringBill(data.data))
         renderBills();
         close?.();
       } else {
@@ -86,7 +90,7 @@ const RecurringBills = ({page}) => {
     }, [user])
 
 
-    const totalBills = bills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0).toFixed(2);
+    const totalBills = recurringBills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0).toFixed(2);
     console.log(totalBills, 'totalBills')
 
     return (
@@ -99,8 +103,8 @@ const RecurringBills = ({page}) => {
                                        <h2>Add New Bill</h2>
                                        <p>Create a pot to set savings targets. These can help keep you on track as you save for special purchases.</p>
                                       <form >
-                                     <InputField type="text" name="title" label_name='Bill Name' value={formData.title || ''} onChange={handleUserInput} />
-                                        <InputField type="number" name="amount" label_name='amount' value={formData.amount || ''} onChange={handleUserInput} placeholder='$'/>                                      
+                                     <InputField type="text" name="title" label_name='Bill Name' value={formData.title || ''} onChange={handleInput} />
+                                        <InputField type="number" name="amount" label_name='amount' value={formData.amount || ''} onChange={handleInput} placeholder='$'/>                                      
                                         <DatePicker selected={formData.due_date} onChange={(date) => setFormData({ ...formData, due_date: date })} />
                                        <ButtonSubmit   onClick={(e) => addNewaddNewBill(e, close)} className='big-btn'  name='add bill'/>
                                       </form> 
@@ -134,7 +138,7 @@ const RecurringBills = ({page}) => {
                         let countDueSoon = 0;
                         let countUpcomming = 0;
                         // Sum amounts
-                        bills.forEach((bill) => {
+                        recurringBills.forEach((bill) => {
                         const amount = parseFloat(bill.amount) || 0;
 
                         if (bill.status === "paid") {
@@ -183,7 +187,7 @@ const RecurringBills = ({page}) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {bills.map((bill) => (
+                    {recurringBills.map((bill) => (
                   
                         <tr key={bill.id}>
                             <td style={{fontWeight: '700', color: '#201F24'}}>{bill.title}</td>

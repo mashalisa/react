@@ -3,7 +3,7 @@ import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
 import { useContext, useEffect, useState } from "react";
 import ButtonSubmit from "../basic/ButtonSubmit"
-import { getLogin } from "../../config/ManageData"
+import { register } from "../../config/api/ManageAPIAuth"
 import { AuthContext } from '../../contexts/AuthContext'
 import { useLocation } from "wouter";
 
@@ -21,7 +21,7 @@ const SignUp = () => {
     e.preventDefault();
      
         try {
-            const data = await getLogin(form, 'register');
+            const data = await register(form, 'register');
             console.log(data, 'data in buttonSubmit')
             if(data.success){
                 console.log(data.data.user, 'data.data.user in buttonSubmit')

@@ -25,7 +25,8 @@ import ReactSelect from 'react-select';
 
 
 
-const Select = ({ name, value, onChange, colorBar, categories, colors}) => {
+const Select = ({ name, value, onChange, colorBar, categories, colors, data}) => {
+  console.log(data, 'data in select')
 
   let options = [];
   console.log(options, 'options in begiinig')
@@ -36,15 +37,19 @@ const Select = ({ name, value, onChange, colorBar, categories, colors}) => {
       value: color.color,
       label: color.color,
       color: color.number, // Assuming this is a color code like 'rgb(255, 0, 0)'
-      // isDisabled: colors.some(c => c.color === color.color && c.isUsed),
+      isDisabled: !!data.some((budget) => budget.theme === color.color && budget.is_used)
+      // isDisabled: true
     }));
    
   }
   else if(name === 'category'){
+    console.log(categories, 'categories in select')
      options = categories.map((category) => ({
       value: category.value,
       label: category.label,
     }));
+
+  
    
   }
 
