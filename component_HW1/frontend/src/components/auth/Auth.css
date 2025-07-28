@@ -1,0 +1,120 @@
+.container {
+    height: 100vh; 
+    padding: 0.5rem;
+    gap: 8rem;    
+    align-items: stretch;
+  }
+  .header-mobile {
+    display: none;
+  }
+  .border-radius {
+    border-radius: var(--container-radius);
+  }
+  .left {
+    flex: 1; 
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    display: block;
+    border-radius: var(--container-radius);
+    text-align: left;
+    max-width: 560px;
+  
+  }
+  .left img {
+    width: 100%;
+    max-width: 480px;
+    border-radius: 10px;
+  }
+  .text-container {
+    padding: 0 5rem 0 3rem;
+    margin-top: -13rem;
+  }
+  .left .title {
+    margin-bottom: 1rem;
+   
+  }
+  .left .text {
+    font-size: var(--font-size-base);
+    color: var(--color-gray);
+   
+  }
+  .right {
+    justify-content: center;
+    color:var(--color-black);
+    flex: 2;
+    margin: 0 2em;
+  
+  }
+  .form-container {
+    background-color: var(--color-white);
+    padding: 2rem ;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 560px;
+    text-align: left;
+  }
+  .form-container h1 {
+    margin-bottom: 2rem;
+      text-align: left;
+  
+  }
+  .form-container form {
+    max-width: 496px;
+    width: 100%;
+  }
+  
+.text span {
+    color: var(--color-black);
+    font-weight: bold;
+    margin-left: 0.25rem;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+.input-field-container {
+    position: relative;
+}
+.toggle-visibility-btn{
+    position: absolute;
+    right: 1rem;
+    transform: translateY(50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+}
+button.toggle-visibility-btn:hover{
+    background-color: var(--color-white);
+}
+  @media (max-width: 1250px) {
+    .container {
+      gap: 1rem;
+  }
+    .text-container {
+      padding: 0 1rem 0 1rem;
+      margin-top: -8rem;
+    }
+    }
+  
+  @media (max-width: 768px) {
+    .left {
+      display: none;
+    }
+    .header-mobile{
+        display: block;
+        background-color: var(--color-black);
+        border-bottom-left-radius: var(--input-radius);
+        border-bottom-right-radius: var(--input-radius);
+        padding: 2rem 0;
+
+    }
+    .logo-top {
+        display: flex;
+        justify-content: center;
+    }
+    .container {
+        flex-direction: column;
+        padding: 0;
+    }
+    }
+  

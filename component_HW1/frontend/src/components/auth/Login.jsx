@@ -1,13 +1,12 @@
-// import ButtonSubmit from "../form/Button"
+
 import { useContext, useEffect, useState } from 'react'
 import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
-// import ButtonSubmit from "../form/Button"
 import ButtonSubmit from "../basic/ButtonSubmit"
-import { getLogin } from "../../config/ManageData"
+import { login } from "../../config/api/ManageAPIAuth"
 import { AuthContext } from '../../contexts/AuthContext'
 import { useLocation } from "wouter";
-
+import { Eye, EyeOff } from 'lucide-react';
 
 
 
@@ -16,13 +15,15 @@ const Login = () => {
   const { setUser } = useContext(AuthContext);
 const [form, setForm] = useState({'email': "", "password": ''})
 const [error, setError] = useState(false)
+const [showPassword, setShowPassword] = useState(false);
 
 
 const handleClickLogin = async (e) => {
+
   e.preventDefault();
    
       try {
-          const data = await getLogin(form, 'login');
+          const data = await login(form, 'login');
           console.log(data, 'data in buttonSubmit')
           if(data.success){
               console.log(data.data.user, 'data.data.user in buttonSubmit')
@@ -46,21 +47,22 @@ const handleClickLogin = async (e) => {
 
      return (
     
-    <div className="right">
-      <div className="form-container">
-        <h1>Login</h1>
+    <div className="right flex-between">
+      <div className="form-container border-radius">
+        <h1 className="title-font">Login</h1>
         <form >
         <InputField name = "email" type = "email" label_name="email"
                     value = {form.email} 
                     onChange = {handleUserInput}
         />
        
-        <InputField name = "password" type = "password" label_name="password"
+        <InputField name = "password"  showPassword={showPassword} setShowPassword={setShowPassword} type="password" label_name="password"
                     value = {form.password} 
                     onChange = {handleUserInput}
         />
-          <ButtonSubmit    name="Login" onClick={handleClickLogin}/>
-         {error && <p className="error-message">wrong credentials</p>}
+        
+          <ButtonSubmit   className="brn-primary" name="Login" onClick={handleClickLogin}/>
+         {error && <p className="error-message" role="alert">{error}</p>}
         </form>
        
 

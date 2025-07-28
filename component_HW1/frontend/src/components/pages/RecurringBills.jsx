@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext } from 'react'
 import { AuthContext } from '../../contexts/AuthContext'
 import Header from '../layout/Header'
 import ModalButton from '../basic/ModalButton'
@@ -7,193 +7,135 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import InputField from '../form/InputField'
 import ButtonSubmit from "../basic/ButtonSubmit"
-import { getData, sendData, eidtData, deleteData} from '../../config/ManageData'
-
-
-const getBills = async (userId) => {
-    const data = await getData(userId, 'bills')
-   return data
-   console.log(data, 'data in getBills')
- }
+import { useForm } from '../../hooks/useForm'
+import { summarizeBills, getOrdinalSuffix } from '../../utils/billUtils'
+import { useRecurringBills } from '../../hooks/useRecurringBills'
+import './bills/Bills.css'
+import useMenu from '../../hooks/useMenu'
+import useMobile from '../../hooks/useMobile'
 
 
 
 
 const RecurringBills = ({page}) => {
-    console.log(page, 'page in RecurringBills')
-
-    const [bills, setBills] = useState([])
-    const {user}  = useContext(AuthContext)
-    const [formData, setFormData] = useState({})
-    const [error, setError] = useState(null)
-
-    function handleUserInput(e) {
-        const { value, name} = e.target
-        setFormData({...formData, [name]: value, user_id: user.id})
-      }
-   
-    const renderBills = () => {
-        console.log(user, 'user in refreshPots')
-        if (user && user.id) {
-            getBills(user.id).then(data => {
-                setBills(data.data);
-                console.log(data, 'bills in bills')
-          }).catch(error => {
-            console.log(error, 'error in bills')
-          });
-        }
-        else {
-            console.log('user not logged in')
-        }
-      };
-
-      
- 
- const addNewaddNewBill = async (e, close) => {
-    e.preventDefault()
-    try {
-      const data = await sendData(formData, 'bills');
-      console.log('Bill creation completed:', data);
   
-      if (data.success) {
-        console.log('Refreshing data list...');
-        renderBills();
+    const {user}  = useContext(AuthContext)
+    const {formData, setFormData, handleInput} = useForm({user_id: user.id });
+    const { menuMobile } = useMenu();
+    const { isMobile } = useMobile();
+    const {
+        recurringBills,
+        error,
+        addBill,
+        fetchBills,
+        setError
+      } = useRecurringBills();
+    
+
+
+      const summary = summarizeBills(recurringBills);   
+ 
+ const handleSubmit  = async (e, close) => {
+    e.preventDefault()
+      const data = await addBill(formData, 'bills'); 
+      if (data.success) {   
         close?.();
       } else {
         console.error('Data creation failed:', data.message);
         setError(data.message);
-      }
-    } catch (err) {
-      console.error('Error in addNewBill:', err);
-      setError(err.message || 'Something went wrong');
-    }      
-  
+      }         
   };
-      const getOrdinalSuffix = (day) => {
-        if (day > 3 && day < 21) return `${day}th`;
-        const lastDigit = day % 10;
-        switch (lastDigit) {
-          case 1: return `${day}st`;
-          case 2: return `${day}nd`;
-          case 3: return `${day}rd`;
-          default: return `${day}th`;
-        }
-      };
       
-    //   RecurringBills()
-    useEffect(() => {
-        renderBills()
-    }, [user])
-
-
-    const totalBills = bills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0).toFixed(2);
-    console.log(totalBills, 'totalBills')
+    const totalBills = recurringBills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0).toFixed(2);
 
     return (
-        // <h1> {page.label}</h1>
         <>
         <Header page={page}>
         <ModalButton btnName="+ Add New Bill" className='open_modal' style={{maxWidth: '142px'}} onOpen={() => {setError(''); }}>
                                   {({ close }) => (
                                        <>
-                                       <h2>Add New Bill</h2>
+                                       <h1>Add New Bill</h1>
                                        <p>Create a pot to set savings targets. These can help keep you on track as you save for special purchases.</p>
                                       <form >
-                                     <InputField type="text" name="title" label_name='Bill Name' value={formData.title || ''} onChange={handleUserInput} />
-                                        <InputField type="number" name="amount" label_name='amount' value={formData.amount || ''} onChange={handleUserInput} placeholder='$'/>                                      
-                                        <DatePicker selected={formData.due_date} onChange={(date) => setFormData({ ...formData, due_date: date })} />
-                                       <ButtonSubmit   onClick={(e) => addNewaddNewBill(e, close)} className='big-btn'  name='add bill'/>
+                                     <InputField type="text" name="title" label_name='Bill Name' value={formData.title || ''} onChange={handleInput} placeholder='e.g. Rent'/>
+                                        <InputField type="number" name="amount" label_name='amount' value={formData.amount || ''} onChange={handleInput} placeholder='e.g. 2000'/>                                      
+                                        <DatePicker    placeholderText="Select a date" className="full-width-input" selected={formData.due_date} onChange={(date) => setFormData({ ...formData, due_date: date })} />
+                                       <ButtonSubmit   onClick={(e) => handleSubmit (e, close)} className='big-btn capitalize'  name='add  bill'/>
                                       </form> 
-                                     {error && <p>{error}</p>}
+                                     {error && <p className='error-message'>{error}</p>}
                                       </>
                                       
                                   )}
                                </ModalButton>       
              
         </Header>
-        <div className="cards-container grid-cols-2">
-            <div className='small-card-container'>
-                <Card style={{backgroundColor: '#201F24'}} className='card-black'>
+        <div className="cards-container grid-cola-2-1 bills-container">
+            <div className='small-card-container flex-mobile'>
+                <Card style={{backgroundColor: '#201F24'}}
+                    className={`card black-card ${isMobile ? 'flex-center' : ''}`}>
                     <img src='./img/icons/bills.png' alt="bill" />
                     <div className='text'>
-                        <p>totla bills</p>
+                        <p className="capitalize">totla bills</p>
                         <h1>${totalBills}</h1>
                     </div>
                 </Card>
-                <Card  className='card'>
+                <Card  className='card' style={{backgroundColor: '#ffffff'}}>
                    <h1>Summary</h1>
                    <table className='table'>
-                
-                
-                   {(() => {
-                        // Declare totals
-                        let billsPaid = 0;
-                        let billsDueSoon = 0;
-                        let billsUpcomming = 0;
-                        let countPaid = 0;
-                        let countDueSoon = 0;
-                        let countUpcomming = 0;
-                        // Sum amounts
-                        bills.forEach((bill) => {
-                        const amount = parseFloat(bill.amount) || 0;
-
-                        if (bill.status === "paid") {
-                            billsPaid += amount;
-                            countPaid +=1
-                           
-                        } else if (bill.status === "soon") {
-                            billsDueSoon += amount;
-                            countDueSoon +=1
-                          
-                        } else if (bill.status === "unpaid") {
-                            billsUpcomming += amount;
-                            countUpcomming +=1
-                            
-                        }
-                        });
-                        
-                        return (
-                <tbody> 
-                    <tr>
-                        <td>Paid Bills</td>
-                        <td>{countPaid}(${billsPaid.toFixed(2)})</td>
-                    </tr>
-                    <tr>
-                        <td>Total Upcomming</td>
-                        <td>{countUpcomming}(${billsUpcomming.toFixed(2)})</td>
-                    </tr>
-                    <tr>
-                        <td  className='soon'>Due Soon</td>
-                        <td className='soon'>{countDueSoon}(${billsDueSoon.toFixed(2)})</td>
-                    </tr>
-                    </tbody>
-                        )
-              })()}
-                </table>
+                        <tbody> 
+                            <tr>
+                                <td><h5>Paid Bills</h5></td>
+                                <td><h5 className={`bold font-base ${menuMobile ? 'text-right' : ''}`}>{summary.paid.count}(${summary.paid.total.toFixed(2)})</h5></td>
+                            </tr>
+                            <tr>
+                                <td><h5>Total Upcomming</h5></td>
+                                <td><h5 className={`bold font-base ${menuMobile ? 'text-right' : ''}`}>{summary.unpaid.count}(${summary.unpaid.total.toFixed(2)})</h5></td>
+                            </tr>
+                            <tr>
+                                <td  className="soon"><h5>Due Soon</h5></td>
+                                <td className='soon'><h5 className={`bold ${menuMobile ? 'text-right' : ''}`}>{summary.soon.count}(${summary.soon.total.toFixed(2)})</h5></td>
+                            </tr>
+                            </tbody>          
+                    </table>
                 </Card>
             </div>
         
-        <Card className='card'>
+        <Card className='card' style={{backgroundColor: '#ffffff'}}>
             <table className='table'>
+                {!isMobile ? (
                 <thead>
                     <tr>
-                        <th>Bill Title</th>
-                        <th>Due Date</th>
-                        <th>Amount</th>
+                        <th><h5>Bill Title</h5></th>
+                        <th><h5>Due Date</h5></th>
+                        <th><h5 className={menuMobile ? 'text-right' : ''}>Amount</h5></th>
                     </tr>
                 </thead>
+                ) : (
+                        <></>
+                )}
                 <tbody>
-                    {bills.map((bill) => (
-                  
+                    {recurringBills.map((bill) => (
+                        isMobile ? (
+                            <tr key={bill.id}>
+                            <td style={{fontWeight: '700', color: '#201F24'}}>{bill.title}
+                                <p  className={bill.status}><span>Monthly -{getOrdinalSuffix(bill.due_day)}</span>
+                                {bill.status === "paid" && <img src='./img/icons/done.png' alt="warning" />}
+                                {bill.status === "soon" && <img src='./img/icons/warning.png' alt="warning" />}
+                                </p>
+                            </td>
+
+                            <td className={`${bill.status === "soon" ? "soon" : ""} ${menuMobile ? "text-right" : ""}`}><h4 className="font-base">${bill.amount}</h4></td>
+                        </tr>
+                        ) : (
                         <tr key={bill.id}>
                             <td style={{fontWeight: '700', color: '#201F24'}}>{bill.title}</td>
                             <td className={bill.status}>Monthly -{getOrdinalSuffix(bill.due_day)}
                                {bill.status === "paid" && <img src='./img/icons/done.png' alt="warning" />}
                                {bill.status === "soon" && <img src='./img/icons/warning.png' alt="warning" />}
-
                             </td>
-                            <td className={bill.status}>${bill.amount}</td>
+                            <td className={`${bill.status === "soon" ? "soon" : ""} ${menuMobile ? "text-right" : ""}`}><h4 className="font-base">${bill.amount}</h4></td>
                         </tr>
+                        )
                     ))}
                 </tbody>
             </table>

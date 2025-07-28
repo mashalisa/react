@@ -3,7 +3,7 @@ import InputField from "../form/InputField"
 import LinkToRegister from "../form/LinkToRegister";
 import { useContext, useEffect, useState } from "react";
 import ButtonSubmit from "../basic/ButtonSubmit"
-import { getLogin } from "../../config/ManageData"
+import { register } from "../../config/api/ManageAPIAuth"
 import { AuthContext } from '../../contexts/AuthContext'
 import { useLocation } from "wouter";
 
@@ -21,7 +21,7 @@ const SignUp = () => {
     e.preventDefault();
      
         try {
-            const data = await getLogin(form, 'register');
+            const data = await register(form, 'register');
             console.log(data, 'data in buttonSubmit')
             if(data.success){
                 console.log(data.data.user, 'data.data.user in buttonSubmit')
@@ -38,9 +38,9 @@ const SignUp = () => {
     
   }
      return (
-    <div className="right">
-      <div className="form-container">
-        <h1>Sign Up</h1>
+    <div className="right flex-between">
+      <div className="form-container border-radius">
+        <h1 className="title-font">Sign Up</h1>
         <form >
         <InputField name = "user_name" type = "text" label_name="Name"
                     value = {form.user_name || ''} 
@@ -54,7 +54,7 @@ const SignUp = () => {
                     value = {form.password} 
                     onChange = {handleUserInput}
         />
-        <ButtonSubmit    name="Create Account" onClick={handleClickSignUp}/>
+        <ButtonSubmit   className="brn-primary" name="Create Account" onClick={handleClickSignUp}/>
         {error && <p className="error-message">wrong credentials</p>}
 
         </form>

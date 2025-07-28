@@ -23,6 +23,8 @@ app.use(cors({
 // Import models from index.js
 const { User, Budgets, Transaction, Vault } = require('./DB/models');
 
+console.log('Budgets model:', Budgets);
+
 // Middleware for parsing JSON bodies
 app.use(express.json());
 
@@ -70,6 +72,7 @@ const syncDatabase = async () => {
 
         // Sync with alter: true to modify existing tables
         await sequelize.sync({ alter: true });
+        // await sequelize.sync({ force: true });
 
         // Re-enable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');

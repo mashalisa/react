@@ -1,15 +1,45 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize('sql7783229', 'sql7783229', 'X9BmAl7vdy', {
-    host: 'sql7.freesqldatabase.com',
-    dialect: 'mysql',
-    port: 3306,
-    logging: console.log, // Enable logging temporarily for debugging
+
+const env = process.env.NODE_ENV || 'development';
+console.log(env, 'env')
+
+const config = {
+    development: {
+        database: process.env.DB_PROD_NAME,
+        username: process.env.DB_PROD_USER,
+        password: process.env.DB_PROD_PASS,
+        host: process.env.DB_PROD_HOST,
+        dialect: 'mysql',
+        port: 3306,
+    },
+    test: {
+        database: process.env.DB_TEST_NAME,
+        username: process.env.DB_TEST_USER,
+        password: process.env.DB_TEST_PASS,
+        host: process.env.DB_TEST_HOST,
+        dialect: 'mysql',
+        port: 3306,
+        logging: false
+    }
+};
+const currentConfig = config[env];
+const sequelize = new Sequelize(
+    currentConfig.database,
+    currentConfig.username,
+    currentConfig.password,
+     {
+        host: currentConfig.host,
+        dialect: currentConfig.dialect,
+        port: currentConfig.port,
+        logging: currentConfig.logging ?? console.log,
     define: {
         timestamps: true,
         underscored: true,
         freezeTableName: true, // Prevent Sequelize from pluralizing table names
+        // Prevent automatic index creation
+        indexes: [],
     },
     pool: {
         max: 5,

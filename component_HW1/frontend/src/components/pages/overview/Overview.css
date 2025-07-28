@@ -1,0 +1,128 @@
+
+  .grid-cols-2-start{
+    grid-template-columns: minmax(0, 60em) 1fr; 
+    gap: 2em;
+  }
+  .card-title {
+    width: 100%;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+  }
+  .card-title button {
+    background-color: transparent;
+    color:var(--color-gray-dark);
+    font-size: var(--font-size-base);
+    max-width: 100%;
+    text-transform: capitalize;
+  }
+  .card-title button span {
+   padding-left: 0.5rem;
+  }
+  .grid-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .text-body-right {
+    padding-left: 2rem;
+}
+  .grid-list li {
+    border: none;
+    padding: 0;
+  }
+  .grid-list li:first-child, .grid-list li:nth-child(2) {
+    padding-bottom: 1.2rem;
+  }
+  .amount {
+    border-left: 5px solid;
+    padding-left: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .color-bar {
+    width: 4px;
+    height: 3rem;
+    border-radius: 4px;
+    background-color: transparent; /* fallback */
+  }
+  
+  .color-bar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+  }
+ li  h5 {
+    color: var(--color-gray-dark);
+    margin-bottom: 0.5rem;
+  }
+  .text-list {
+    padding-left: 1rem;
+}
+.text-body-left img {
+    width: 26.875px;
+    max-width: 1027px;
+}
+.color-bar-body {
+    background-color: var(--color-gray-box);
+    padding: 1rem;
+    border-radius: var(--input-radius);
+    margin-bottom: 1rem;
+}
+.color-bar-body h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.color-bar-body:first-child {
+    border-left: 5px solid #277C78
+}
+.color-bar-body:nth-child(2) {
+    border-left: 5px solid #F2CDAC
+}
+.color-bar-body:nth-child(3) {
+    border-left: 5px solid #82C9D7
+}
+@media (max-width: 1250px) and (min-width: 769px) {
+  .left-card .cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+    .grid-cols-2-start {
+        grid-template-columns: 1fr;
+    }
+    .cards-container.mobile-card-container {
+      grid-template-columns: 4fr 1fr;
+    }
+    .right-card {
+      margin-top: -1rem;
+  }
+  .cards-container {
+    gap:1rem;
+  }
+}
+@media (max-width: 600px) {
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+}
+.card {
+  margin-bottom: 0;
+}
+.main-content {
+  padding: 0 1em;
+}
+ .cards-container, .cards-container.mobile-card-container {
+  grid-template-columns: 1fr;
+}
+.left-card .card, .right-card .card {
+  margin-top: 1rem;
+}
+.budgets-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+}

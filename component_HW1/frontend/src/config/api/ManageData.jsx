@@ -1,10 +1,12 @@
 // const urlBasic = "http://localhost:3000/api/";
-const urlBasic = "https://react-p8qv.onrender.com/api/";
+const api = import.meta.env.VITE_API_URL;
+// const urlBasic = "https://react-p8qv.onrender.com/api/";
+const urlBasic = api + "/api/";
 
 
 // const urlAuth = "http://localhost:3000/api/auth/";
-const urlAuth = "https://react-p8qv.onrender.com/api/auth/";
-
+// const urlAuth = "https://react-p8qv.onrender.com/api/auth/";
+const urlAuth = api + "/api/auth/";
 export async function getLogin(formData, path)  {
     let url = urlAuth + path;
     console.log(formData, 'formData')

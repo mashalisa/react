@@ -5,7 +5,7 @@ const DropDownMenu = ({ btnName, children }) => {
   
     return (
       <>
-        <Button onClick={() => setIsOpen(!isOpen)} className="dropdown-btn">{btnName}</Button>
+        <Button onClick={() => setIsOpen(!isOpen)} className="dropdown-btn"><img src='./img/icons/dots.png' alt="dots" /></Button>
         {isOpen && (
           <div className="dropdown-menu">
             {typeof children === 'function'

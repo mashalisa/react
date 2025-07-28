@@ -22,6 +22,21 @@ function transactionsController() {
                         result = await transactionsService[method](userId);
                     } else if (method === 'createNewtransactions') {
                         result = await transactionsService[method](req.body);
+<<<<<<< HEAD
+=======
+                    } else if (method === 'searchTransactions') {
+                        const { name, userId } = req.params;
+                        console.log(`Controller: Searching transactions for user ${userId} with name ${name}`);
+                        result = await transactionsService[method](name, userId);
+                    } else if (method === 'searchTransactionsByCategory') {
+                        const { category, userId } = req.params;
+                        console.log(`Controller: Searching transactions for user ${userId} with category ${category}`);
+                        result = await transactionsService[method](category, userId);
+                    } else if (method === 'sortTransactions') {
+                        const { sort, userId } = req.params;
+                        console.log(`Controller: Sorting transactions for user ${userId} with sort ${sort}`);
+                        result = await transactionsService[method](sort, userId);
+>>>>>>> frontend-update
                     }
 
                     console.log(`Controller: ${method} result:`, result);
