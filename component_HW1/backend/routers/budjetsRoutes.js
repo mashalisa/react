@@ -187,4 +187,93 @@ router.get('/:userId', budjetsController.getAllBudjetsByUserId);
  */
 router.post('/', budjetsController.addNewBudjet);
 
+/**
+ * @swagger
+ * /api/budgets/{id}:
+ *   put:
+ *     summary: Update a budget by ID
+ *     tags:
+ *       - Budgets
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The budget ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               category_id:
+ *                 type: string
+ *                 description: Category ID
+ *               max_amount:
+ *                 type: number
+ *                 format: float
+ *                 description: Maximum amount for the budget
+ *               theme:
+ *                 type: string
+ *                 description: Theme color
+ *               user_id:
+ *                 type: string
+ *                 description: User ID
+ *               is_used:
+ *                 type: boolean
+ *                 description: Is the budget used
+ *     responses:
+ *       200:
+ *         description: Budget updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Budget'
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Budget not found
+ */
+router.put('/:id', budjetsController.editBudget);
+
+/**
+ * @swagger
+ * /api/budgets/{id}:
+ *   delete:
+ *     summary: Delete a budget by ID
+ *     tags:
+ *       - Budgets
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The budget ID
+ *     responses:
+ *       200:
+ *         description: Budget deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Budget not found
+ */
+router.delete('/:id', budjetsController.deleteBudget);
+
 module.exports = router;

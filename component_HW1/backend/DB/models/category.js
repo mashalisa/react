@@ -10,19 +10,25 @@ Category.init({
         defaultValue: DataTypes.UUIDV4
     },
     name: {
-        type: DataTypes.ENUM(
-            'entertainment', 'bills', 'groceries',
-            'dining out', 'transportation', 'shopping', 'other'
-          ),
+        type: DataTypes.STRING(50),
         unique: true,
-        allowNull: false
-      }
+        allowNull: false,
+        validate: {
+            isIn: [['entertainment', 'bills', 'groceries', 'dining out', 'transportation', 'shopping', 'other']]
+        }
+    }
    
 }, {
     sequelize,
     modelName: 'Category',
     tableName: 'category',
-    timestamps: true
+    timestamps: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['name']
+        }
+    ]
 });
 
 module.exports = Category;

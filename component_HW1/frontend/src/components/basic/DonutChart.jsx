@@ -63,7 +63,7 @@ const DonutChart = ({ data, transactionSpentAll}) => {
           fontSize={12}
           fill="#666"
         >
-        ${total}
+        of  ${total} limit
         </text>
       </PieChart>
         </ResponsiveContainer>

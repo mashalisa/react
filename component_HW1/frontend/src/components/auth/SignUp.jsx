@@ -38,9 +38,9 @@ const SignUp = () => {
     
   }
      return (
-    <div className="right">
-      <div className="form-container">
-        <h1>Sign Up</h1>
+    <div className="right flex-between">
+      <div className="form-container border-radius">
+        <h1 className="title-font">Sign Up</h1>
         <form >
         <InputField name = "user_name" type = "text" label_name="Name"
                     value = {form.user_name || ''} 
@@ -54,7 +54,7 @@ const SignUp = () => {
                     value = {form.password} 
                     onChange = {handleUserInput}
         />
-        <ButtonSubmit    name="Create Account" onClick={handleClickSignUp}/>
+        <ButtonSubmit   className="brn-primary" name="Create Account" onClick={handleClickSignUp}/>
         {error && <p className="error-message">wrong credentials</p>}
 
         </form>

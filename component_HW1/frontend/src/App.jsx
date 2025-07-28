@@ -18,8 +18,11 @@ import { Route, useLocation } from "wouter";
 import { AuthContext } from './contexts/AuthContext';
 import { useEffect, useContext } from 'react';
 import Header from './components/layout/Header';
-
+import './components/auth/Auth.css';
+import useMenu from './hooks/useMenu';
+import SideBarMobile from './components/sidebar/SidebarMobile';
 function App() {
+  const { menuMobile } = useMenu();
   const menu = [
     { id: 'page1', label: 'overview', path: '/', component: Overview, isButtonExists: false, svg_path: './img/icons/overview.svg' },
     { id: 'page2', label: 'transactions', path: '/transactions', component: Transactions, isButtonExists: false, svg_path: './img/icons/transaction.svg' },
@@ -40,7 +43,7 @@ function App() {
   if (user ) {
     return (
       <div className="page-container">
-        <SideBar menu={menu}  />
+        {menuMobile ? <SideBarMobile menu={menu}  /> : <SideBar menu={menu}  />}
         <div className="main-content">
           {menu.map((item) => {
             return (
@@ -60,7 +63,12 @@ function App() {
     )
   } else {
     return (
-      <div className="container">
+      <div className="container flex-between">
+        <div className="header-mobile">
+          <div className="logo-top">
+          <div className="logo"><img src="/img/logo.png" alt="logo" /></div>
+          </div>
+          </div>
         <AuthImage 
           title="Keep track of your money and save for your future" 
           text="Personal finance app puts you in control of your spending. Track transactions, set budgets, add to savings pots easily"

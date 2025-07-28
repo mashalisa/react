@@ -1,4 +1,5 @@
 import Button from '../basic/buttonOLD';
+import './Header.css';
 const Header = ({ page, children}) => {
     console.log(page, 'page in header')
     const handleClick = () => {
@@ -7,7 +8,7 @@ const Header = ({ page, children}) => {
       };
     return (
         <div className="header">
-            <h1>{page}</h1>
+            <h1 className="title-font">{page}</h1>
             {children}
             
         </div>

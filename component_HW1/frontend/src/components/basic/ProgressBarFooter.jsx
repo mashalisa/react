@@ -34,10 +34,10 @@ const ProgressBarFooter = (current_amount) => {
 
                 <div className="progress-footer">
                     <div className="progress-label">
-                        {usageNew > 0 ? `${usageNew.toFixed(2)}%` : `${usage.toFixed(2)}%`}
+                       <h5 className="gray-500 bold">{usageNew > 0 ? `${usageNew.toFixed(2)}%` : `${usage.toFixed(2)}%`}</h5>
                     </div>
                     <div className="progress-label label-target">
-                        Target of ${goal}
+                        <h5 className="gray-500">Target of ${goal}</h5>
                     </div>
                 </div>
         </>

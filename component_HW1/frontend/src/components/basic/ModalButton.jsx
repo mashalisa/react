@@ -1,5 +1,5 @@
 // ModalButton.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import Button from './button';
 import Modal from './Modal';
 
@@ -7,29 +7,26 @@ const ModalButton = ({ btnName, children, className, style, onOpen, onClose }) =
 
   const [isOpen, setIsOpen] = useState(false);
   
-  const wasOpen = useRef(false); // tracks last isOpen state
-  useEffect(() => {
-    if (isOpen && !wasOpen.current) {
-      if (typeof onOpen === 'function') {
-        onOpen(); // only call when transitioning to open
-      }
+  const openModal = useCallback(() => {
+   if (typeof onOpen === 'function') {
+    onOpen();
+   }
+    setIsOpen(true);
+  }, [onOpen]);
+
+  const closeModal = useCallback(() => {
+    if (typeof onClose === 'function') { 
+      onClose();  
     }
-    else if (!isOpen && wasOpen.current) {
-      if (typeof onClose === 'function') {
-        onClose(); // only call when transitioning to close
-      }
-    }
-    wasOpen.current = isOpen;
-  }, [isOpen, onOpen, onClose]);
+    setIsOpen(false);
+  }, [onClose]);
   
 
   return (
     <>
-      <Button   style={style} className={className} onClick={() => setIsOpen(true)}>{btnName}</Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        {typeof children === 'function'
-          ? children({ close: () => setIsOpen(false) })
-          : children}
+      <Button   style={style} className={className} onClick={openModal}>{btnName}</Button>
+      <Modal isOpen={isOpen}  onClose={closeModal}>
+      {typeof children === 'function' ? children({ close: closeModal }) : children}
       </Modal>
     </>
   );

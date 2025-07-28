@@ -1,33 +1,15 @@
 
 import ReactSelect from 'react-select';
-
-// const Select = ({name, value, onChange, colorBar}) => {
-  
-
- 
-
-//   return (
-//     <div>
-//       <label htmlFor={name}>Choose a color:</label>
-//       <select id="dropdown" name={name} value={value}  onChange={onChange} >
-//         {colorBar.map((color, index) => {
-//             return (
-//                 <option key={index} value={color.color}><span className="theme-color" style={{backgroundColor: color.number}}></span>{color.color}</option>
-//             )
-//         })}
-//       </select>
-
-//     </div>
-//   );
-// };
-
-// export default Select;
+import CustomDropdownIndicator from './DropdownIndicator';
+import React, { forwardRef } from 'react';
 
 
 
-const Select = ({ name, value, onChange, colorBar, categories, colors, data}) => {
-  console.log(data, 'data in select')
-
+const Select = forwardRef(({ name, value, onChange, colorBar, categories, colors, data, isLabel}, ref) => {
+  if (isLabel == undefined){
+    isLabel = true
+  }
+  console.log(isLabel, 'isLabel in select')
   let options = [];
   console.log(options, 'options in begiinig')
   if(name === 'theme'){
@@ -38,6 +20,7 @@ const Select = ({ name, value, onChange, colorBar, categories, colors, data}) =>
       label: color.color,
       color: color.number, // Assuming this is a color code like 'rgb(255, 0, 0)'
       isDisabled: !!data.some((budget) => budget.theme === color.color && budget.is_used)
+      
       // isDisabled: true
     }));
    
@@ -58,13 +41,15 @@ const Select = ({ name, value, onChange, colorBar, categories, colors, data}) =>
 
   return (
     <div>
-      <label htmlFor={name}>Theme</label>
+      {isLabel  && <label htmlFor={name}>{name}</label>}
       <ReactSelect
+        ref={ref}
         inputId={name}
         name={name}
         value={options.find((option) => option.value === value)}
         onChange={(selectedOption) => onChange(selectedOption)}
         options={options}
+        components={{ DropdownIndicator: CustomDropdownIndicator }}
         getOptionLabel={(e) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             {name === 'theme' && <span
@@ -85,15 +70,27 @@ const Select = ({ name, value, onChange, colorBar, categories, colors, data}) =>
           control: (base) => ({
             ...base,
             borderColor: '#ccc',
+            marginBottom: '1em',
+            color: 'var(--color-primary)',
             boxShadow: 'none',
             '&:hover': { borderColor: '#aaa' },
+            
           }),
+          dropdownIndicator: (provided, state) => ({
+            ...provided,
+            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)', // Optional rotation
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              color: '#0056b3',
+            },
+          }),
+    
         }}
         placeholder={name === 'theme' ? "Select a color" : "Select a category"}
       />
     </div>
   );
-};
+});
 
 export default Select;
 

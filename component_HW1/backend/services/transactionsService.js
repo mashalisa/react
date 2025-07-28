@@ -1,7 +1,7 @@
 const Transaction = require('../DB/models/transactions');
 const Budgets = require('../DB/models/budjets');
 const Category = require('../DB/models/category');
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 
 const getAllTransactions = async () => {
     console.log('getAllTransactions');
@@ -71,31 +71,32 @@ const createNewtransactions = async (transactionData) => {
             where: { category_id: categoryRecord.id }
         });
         
-        if (existingBudget) {
-            throw new Error(`No budget found for category "${category}" for user ${user_id}. This category exists for user ${existingBudget.user_id}`);
-        } else {
+        if (!existingBudget) {
+        
+            throw new Error(`No budget found for category "${category}". Please create a budget for this category first.`);
+        }
+        else {
             throw new Error(`No budget found for category "${category}". Please create a budget for this category first.`);
         }
     }
-
-    // Calculate total amount for this category
-    let transactionsAmount = await Transaction.sum('amount', {
-        where: {
-            user_id,
-            CategoryId: categoryRecord.id
-        }
-    }) || 0; // Default to 0 if no transactions exist
-
-    console.log('Current total:', transactionsAmount, 'New amount:', amount, 'Budget limit:', budgetRecord.max_amount);
+    else {
+        let transactionsAmount = await Transaction.sum('amount', {
+            where: {
+                user_id,
+                CategoryId: categoryRecord.id
+            }
+        }) || 0; // Default to 0 if no transactions exist
     
-    // Check budget limits
-    if (amount > budgetRecord.max_amount) {
-        throw new Error(`Amount ${amount} is greater than the budget limit ${budgetRecord.max_amount} for category "${category}".`);
-    }
-    else if (transactionsAmount + parseFloat(amount) > budgetRecord.max_amount) {
-        throw new Error(`Total amount ${transactionsAmount + parseFloat(amount)} would exceed the budget limit ${budgetRecord.max_amount} for category "${category}".`);
-    }
-
+        // console.log('Current total:', transactionsAmount, 'New amount:', amount, 'Budget limit:', budgetRecord.max_amount);
+          // Check budget limits
+           // Calculate total amount for this category
+        if (amount > budgetRecord.max_amount) {
+            throw new Error(`Amount ${amount} is greater than the budget limit ${budgetRecord.max_amount} for category "${category}".`);
+        }
+        else if (transactionsAmount + parseFloat(amount) > budgetRecord.max_amount) {
+            throw new Error(`Total amount ${transactionsAmount + parseFloat(amount)} would exceed the budget limit ${budgetRecord.max_amount} for category "${category}".`);
+        }
+        
     // Check if a transaction with the same name exists for this user
     const exists = await Transaction.findOne({
         where: {
@@ -135,6 +136,13 @@ const createNewtransactions = async (transactionData) => {
         data: transactionWithCategory,
         message: 'Transaction created successfully'
     };
+    }
+ 
+ 
+  
+    
+   
+
 };
 
 const transactionByBudgetId = async (userId) => {
@@ -191,10 +199,134 @@ const transactionByBudgetId = async (userId) => {
     };
 };
 
+const searchTransactions = async (name, userId) => {
+    console.log('Service: Getting transaction for user:', userId);
+    if (!userId && !name) {
+        return {
+            success: false,
+            message: 'User ID and name is required',
+            data: null
+        };
+    }
+
+    console.log('Service: Querying database for transactions...');
+    const transactions = await Transaction.findAll({
+        where: { 
+            user_id: userId, 
+            recipient_name: { [Op.like]: `%${name}%` } },
+        include: [{
+            model: Category,
+            attributes: ['id', 'name']
+        }],
+        order: [['transaction_date', 'DESC']]
+    });
+
+    console.log('Found transactions:', JSON.stringify(transactions, null, 2));
+  
+    return {
+        success: true,
+        data: transactions,
+        message: 'Transactions retrieved successfully'
+    };
+};
+const searchTransactionsByCategory = async (category, userId) => {
+    console.log('Service: Getting transaction for user:', userId);
+    if (!userId && !category) {
+        return {
+            success: false,
+            message: 'User ID and name is required',
+            data: null
+        };
+    }
+
+    console.log('Service: Querying database for transactions...');
+
+    const categoryRecord = await Category.findOne({
+        where: { name: category }
+    });
+    if (!categoryRecord) {
+        return {
+            success: false,
+            message: 'Category not found',
+            data: null
+        };
+    }
+    const transactions = await Transaction.findAll({
+        where: { 
+            user_id: userId, 
+            CategoryId: categoryRecord.id
+           },
+        include: [{
+            model: Category,
+            attributes: ['id', 'name']
+        }],
+        order: [['transaction_date', 'DESC']]
+    });
+
+    console.log('Found transactions:', JSON.stringify(transactions, null, 2));
+  
+    return {
+        success: true,
+        data: transactions,
+        message: 'Transactions retrieved successfully'
+    };
+};
+
+
+const sortTransactions = async (sort, userId) => {
+    console.log('Service: Getting transaction for user:', userId);
+    if (!userId && !sort) {
+        return {
+            success: false,
+            message: 'User ID and name is required',
+            data: null
+        };
+    }
+
+    console.log('Service: Querying database for transactions...');
+    let orderDate = [['transaction_date', 'DESC']]
+    if (sort === 'oldest') {
+        orderDate = [['transaction_date', 'ASC']]
+    }   
+    else if (sort === 'highest') {
+        orderDate = [['amount', 'DESC']]
+    }
+    else if (sort === 'lowest') {
+        orderDate = [['amount', 'ASC']]
+    }
+    else if (sort === 'A to Z') {
+        orderDate = [['recipient_name', 'ASC']]
+    }
+    else if (sort === 'Z to A') {
+        orderDate = [['recipient_name', 'DESC']]
+    }
+
+    const transactions = await Transaction.findAll({
+        where: { 
+            user_id: userId, 
+           },
+        include: [{
+            model: Category,
+            attributes: ['id', 'name']
+        }],
+        order: orderDate
+    });
+
+    console.log('Found transactions:', JSON.stringify(transactions, null, 2));
+  
+    return {
+        success: true,
+        data: transactions,
+        message: 'Transactions retrieved successfully'
+    };
+};
 module.exports = {
     getAllTransactions,
     getTransactionById,
     getTransactionByUserId,
     createNewtransactions,
-    transactionByBudgetId
+    transactionByBudgetId,
+    searchTransactions,
+    searchTransactionsByCategory,
+    sortTransactions
 };

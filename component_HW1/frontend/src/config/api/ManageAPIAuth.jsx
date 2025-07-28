@@ -1,8 +1,13 @@
 
 
-
-const urlAuth = "http://localhost:3000/api/auth/";
+const apibasic = import.meta.env.VITE_API_URL;
+const envMode = import.meta.env.MODE; 
+console.log(envMode, 'envMode')
+console.log(apibasic, 'apibasic')
+// const urlAuth = "http://localhost:3000/api/auth/";
 // const urlAuth = "https://react-p8qv.onrender.com/api/auth/";
+
+const urlAuth = apibasic + "/api/auth/";
 
 export async function login(formData, path)  {
     let url = urlAuth + path;
@@ -17,7 +22,8 @@ export async function login(formData, path)  {
     });
   
     if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
+      const data = await response.json();
+      throw new Error(` ${data.message}`);
       
     }
   
@@ -38,7 +44,8 @@ export async function login(formData, path)  {
     });
   
     if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
+      const data = await response.json();
+      throw new Error(` ${data.message}`);
       
     }
   

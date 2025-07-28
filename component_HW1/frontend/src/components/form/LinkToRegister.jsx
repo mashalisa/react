@@ -17,7 +17,7 @@ const LinkToRegister = ({ text, link }) => {
   };
 
   return (
-    <p className="text">
+    <p className="text center-text">
       {text}
       <span onClick={handleClick}>
         {link}

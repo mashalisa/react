@@ -61,6 +61,12 @@ function handleChangeTheme(selectedOption, fieldName, colors, setColors, setIsUs
         is_used: isUsedValue,
       });
 }
-return [formData, setFormData, handleInput, handleChange, handleChangeTheme];
+return {
+  formData,
+  setFormData,
+  handleInput,
+  handleChange,
+  handleChangeTheme,
+};
 
 }

@@ -1,55 +1,11 @@
-const urlBasic = "http://localhost:3000/api/";
+// const urlBasic = "http://localhost:3000/api/";
 // const urlBasic = "https://react-p8qv.onrender.com/api/";
 
-
-export async function deleteBudget(itemId, path){
-    console.log(itemId, 'itemId in deleteData')
-    console.log(path, 'path in deleteData')
-    try {
-        const url = urlBasic + path + '/' + itemId;
-        console.log(url, 'url in deleteData')
-        const response = await fetch(url, {
-            method: "DELETE",
-        });
-        const data = await response.json();
-        console.log('Pot deleted successfully:', data);
-        return data;
-        
-    } catch (error) {
-        console.error('Error in deletePot:', error);
-        throw error;
-    }
-}
+const api = import.meta.env.VITE_API_URL;
+// const urlBasic = "https://react-p8qv.onrender.com/api/";
+const urlBasic = api + "/api/";
 
 
-export  async function editBudget(potId, formData, path){
-    if (!potId) {
-        throw new Error('potId ID is required');
-    }
-    console.log('potId in addNewPot', potId);
-  console.log(formData, 'formData in eidtData')
-  const url = urlBasic + path + '/' + potId;
-    const response  = await fetch(url, {
-        method: "PUT",                      
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...formData})
-      });
-    
-      console.log('Received response:', response.status, response.statusText);
-      const data = await response.json();
-      console.log('Parsed response data:', data);
-      
-      if (!response.ok) {
-          console.error('Server returned error:', data);
-          throw new Error(data.message || 'Unknown server error');
-      }
-      
-      console.log('Pot created successfully:', data);
-      return data;
-    
-}
 
 export async function createNewBudget(newData,path){
     const url = urlBasic + path;
@@ -106,7 +62,7 @@ export async function getCategories(){
     if(response.ok){
         return data
     }else{
-        throw new Error('Failed to fetch pots')
+        throw new Error('Failed to fetch categories')
     }
 }
 
@@ -117,7 +73,61 @@ export async function getTransactionsByBudgetId(userId){
     if(response.ok){
         return data
     }else{
-        throw new Error('Failed to fetch pots')
+        throw new Error('Failed to fetch budgets')
     }
+}
+
+export async function deleteBudget(itemId, path){
+    console.log(itemId, 'itemId in deleteData')
+    console.log(path, 'path in deleteData')
+    try {
+        const url = urlBasic + path + '/' + itemId;
+        console.log(url, 'url in deleteData')
+        const response = await fetch(url, {
+            method: "DELETE",
+        });
+        const data = await response.json();
+        console.log('Budget deleted successfully:', data);
+        return data;
+        
+    } catch (error) {
+        console.error('Error in deleteBudget:', error);
+        throw error;
+    }
+}
+
+
+export  async function editBudget(budgetId, formData, path, transactionSpent){
+    if (!budgetId) {
+        throw new Error('budgetId ID is required');
+    }
+    console.log('budgetId in addNewPot', budgetId);
+    console.log(transactionSpent, 'transactionSpent in eidtData')
+    console.log(formData.max_amount, 'formData.max_amount in eidtData')
+  console.log(formData, 'formData in eidtData')
+  if (transactionSpent > formData.max_amount) {
+    throw new Error('Transaction spent is greater than the budget limit');
+  }
+  const url = urlBasic + path + '/' + budgetId;
+    const response  = await fetch(url, {
+        method: "PUT",                      
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...formData})
+      });
+    
+      console.log('Received response:', response.status, response.statusText);
+      const data = await response.json();
+      console.log('Parsed response data:', data);
+      
+      if (!response.ok) {
+          console.error('Server returned error:', data);
+          throw new Error(data.message || 'Unknown server error');
+      }
+      
+      console.log('Budget created successfully:', data);
+      return data;
+    
 }
 // export  {deleteData, eidtData, sendData, getData};
