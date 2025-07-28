@@ -113,20 +113,30 @@ const addNewBudjet = async (budjetData) => {
         message: 'Budget created successfully'
     };
 };
-
-// Edit a budget
-const editBudget = async (budgetData, id) => {
-    const budget = await Budgets.findByPk(id);
-    if (!budget) {
-        throw new Error('Budget not found');
-    }
+// / Edit a budget
+const editBudget = async (budjetData, id) => {
+    console.log('Service: Editing budget with ID:', id);
+    console.log('Service: Edit data:', budjetData);
     
-    const updatedBudget = await budget.update(budgetData);
-    return {
-        success: true,
-        data: updatedBudget,
-        message: 'Budget updated successfully'
-    };
+    try {
+        const budgetToUpdate = await Budgets.findByPk(id);
+        if (!budgetToUpdate) {
+            console.log('Service: Budget not found with ID:', id);
+            throw new Error('Budget not found');
+        }
+        
+        const editedBudget = await budgetToUpdate.update(budjetData);
+        console.log('Service: Edited budget:', editedBudget);
+        
+        return {
+            success: true,
+            data: editedBudget,
+            message: 'Budget edited successfully'
+        };
+    } catch (error) {
+        console.error('Service: Error editing budget:', error);
+        throw error;
+    }
 };
 
 // Delete a budget
@@ -139,7 +149,7 @@ const deleteBudget = async (id) => {
     return {
         success: true,
         data: deleteBudget,
-        message: 'Budget deleted successfully'
+        message: 'Vault deleted successfully'
     };
 };
 

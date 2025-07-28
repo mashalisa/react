@@ -1,0 +1,40 @@
+* [33mc78b6ae[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m merge brancehs
+*   [33mb0bb184[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m upgrate components
+[32m|[m[33m\[m  
+[32m|[m * [33m83edffd[m[33m ([m[1;31morigin/frontend-update[m[33m, [m[1;32mfrontend-update[m[33m)[m css updated
+[32m|[m * [33mdbf168b[m dded hooks and transactions
+[32m|[m * [33m69de095[m updated transactions in backend
+* [33m|[m   [33m69838dd[m Merge branch 'master' of github.com:mashalisa/react
+[34m|[m[35m\[m [33m\[m  
+[34m|[m * [33m|[m [33m091055c[m Merge pull request #1 from mashalisa/frontend-update
+[34m|[m [36m|[m[33m\[m[33m|[m 
+[34m|[m [36m|[m * [33m395a04f[m clean up submit button and creating bill page
+[34m|[m [36m|[m[36m/[m  
+* [36m/[m [33m097d8d6[m Update backend from frontend-update branch
+[36m|[m[36m/[m  
+* [33mad0da8b[m Update backend: [your short description here]
+* [33mcf6fef1[m create edit and delte buttond, donut chart and lazy
+* [33me502a80[m combine two submit buttons in one
+* [33m20e1cad[m fixing pot function by user by ID
+* [33mce24a98[m fixing pot function by user by ID
+* [33m119d24c[m fixing pot function by user by ID
+* [33m2de211a[m fixing pot function by user by ID
+* [33m2d588cc[m fixing pot function by user by ID
+* [33m7e7eb5f[m updated pots modal frontend
+* [33m5f1d053[m created pots tabel
+* [33m1c65157[m singup was added
+* [33mbf802ae[m added route to pages
+* [33m59093f4[m cors updated
+* [33m72d658f[m fixing db FOREIGN_KEY_CHECKS issue
+* [33m52b7d42[m database error was fixed
+* [33md351b9f[m swagger-jsdoc updated
+* [33m41b7e35[m added swagger-ui-express
+* [33m2ca3f67[m bcrypt updated
+* [33ma3deeba[m added transaction backend
+* [33mae98be9[m added login backend
+* [33mdbffefd[m addded global pages and bar menu
+* [33m3417900[m components separated
+*   [33m47840d6[m Merge branch 'master' of github.com:mashalisa/react
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33m878833d[m Initial commit
+* [33m092231d[m Initial commit
