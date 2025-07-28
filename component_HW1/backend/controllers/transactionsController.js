@@ -22,8 +22,6 @@ function transactionsController() {
                         result = await transactionsService[method](userId);
                     } else if (method === 'createNewtransactions') {
                         result = await transactionsService[method](req.body);
-<<<<<<< HEAD
-=======
                     } else if (method === 'searchTransactions') {
                         const { name, userId } = req.params;
                         console.log(`Controller: Searching transactions for user ${userId} with name ${name}`);
@@ -36,7 +34,6 @@ function transactionsController() {
                         const { sort, userId } = req.params;
                         console.log(`Controller: Sorting transactions for user ${userId} with sort ${sort}`);
                         result = await transactionsService[method](sort, userId);
->>>>>>> frontend-update
                     }
 
                     console.log(`Controller: ${method} result:`, result);

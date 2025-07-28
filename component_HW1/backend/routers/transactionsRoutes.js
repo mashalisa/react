@@ -326,8 +326,6 @@ router.get('/budget/:userId', transactionsController.transactionByBudgetId);
  *                   type: null
  */
 router.post('/', transactionsController.createNewtransactions);
-<<<<<<< HEAD
-=======
 
 /**
  * @swagger
@@ -599,6 +597,5 @@ router.get('/search/category/:category/:userId', transactionsController.searchTr
  *                   type: null
  */
 router.get('/sort/:sort/:userId', transactionsController.sortTransactions);
->>>>>>> frontend-update
 
 module.exports = router;

@@ -14,6 +14,15 @@ const config = {
         dialect: 'mysql',
         port: 3306,
     },
+    production: {
+        database: process.env.DB_PROD_NAME,
+        username: process.env.DB_PROD_USER,
+        password: process.env.DB_PROD_PASS,
+        host: process.env.DB_PROD_HOST,
+        dialect: 'mysql',
+        port: 3306,
+        logging: false
+    },
     test: {
         database: process.env.DB_TEST_NAME,
         username: process.env.DB_TEST_USER,
