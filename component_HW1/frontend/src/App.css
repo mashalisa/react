@@ -515,6 +515,19 @@ table span::after {
 .grid-cola-2-1 {
   grid-template-columns: 1fr 2fr;
 }
+.loader-spinner {
+  position: absolute;
+  bottom: 20px;
+  right: 50%;
+  width: 25px;
+  height: 25px;
+}
+.main-content .loader-spinner {
+  bottom: 50%;
+  right: 50%;
+  width: 100px;
+  height: 100px;
+}
 @media (max-width: 768px) {
   .main-content{
     margin-bottom: 5em;

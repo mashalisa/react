@@ -69,8 +69,9 @@ const authService = {
         // Generate JWT token
         const token = jwt.sign(
             { 
-                userId: user.id, 
-                email: user.email 
+                id: user.id, 
+                email: user.email,
+                user_name: user.user_name
             },
             process.env.JWT_SECRET || 'your-secret-key',
             { expiresIn: '1h' }

@@ -8,6 +8,7 @@ import useOverView from "../../hooks/useOverView"
 import CardStatistics from "./overview/CardStatistics"
 
 
+
 const Overview = ({page}) => {
 
 const {
@@ -15,6 +16,8 @@ const {
     totalTransactions, incomTransactions, expenseTransactions,  firsttransactions,
     firstPots, totalPots, 
     firstBills} = useOverView()
+
+ 
     return (
         <>
                 <Header page={page}></Header>
@@ -77,7 +80,6 @@ const {
                                               year: 'numeric'
                                             });
                                             
-                                            console.log(formatted); // "01 Jul 2025"
                                             return <tr key={transaction.id}>
                                                 <td className="capitalize"><h4>{transaction.recipient_name}</h4></td>
                                                 <td className="text-right"><h4 className={transaction.amount >0 ? 'positive ' : 'negative '}>{transaction.amount > 0 ? '+' : '-'} ${Math.abs(transaction.amount).toFixed(2)}</h4><h5>{formatted}</h5></td>

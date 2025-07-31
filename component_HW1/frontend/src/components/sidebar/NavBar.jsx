@@ -9,6 +9,7 @@ const SideBar = ({  menu  }) => {
   const [rotate, setRotate] = useState(false);
   const [opacity, setOpacity] = useState(false);
   const [minimazeSidebar, setMinimazeSidebar] = useState(false);
+  const [_, navigate] = useLocation()
   const handleClick = () => {
     if (minimazeSidebar) {
     setMinimazeSidebar(false);
@@ -39,8 +40,10 @@ const SideBar = ({  menu  }) => {
           
         );
       })}
+           <a onClick={() => {navigate('/login'); localStorage.removeItem('authToken'); window.location.reload()}} style={{cursor: 'pointer'}}><span>Logout</span></a>
       </div>
       <div className="menu-btn-container">
+   
       <button onClick={handleClick} alt="menu" className={`menu-btn flex-center ${rotate ? "button-animate" : "button-animate-out"}`}>
         <img   src="/img/icons/arrow-menu.png" alt="menu"  />
       <span  className={`${opacity ? "button-animate-opacity capitalize" : "capitalize"}`}>Minimize menu</span>

@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../configDB/sequelize');
 
+console.log('Creating Budgets model...');
+
 const Budgets = sequelize.define('Budgets', {
     id: {
         type: DataTypes.UUID,
@@ -34,4 +36,6 @@ const Budgets = sequelize.define('Budgets', {
     underscored: true
 });
 
+console.log('Budgets model created:', Budgets);
+console.log('Budgets tableName:', Budgets.tableName);
 module.exports = Budgets;      

@@ -6,6 +6,14 @@ const Vault = require('./pots');
 const Bills = require('./bills');
 const Category = require('./category');
 
+console.log('Loading models...');
+console.log('User model:', User);
+console.log('Budgets model:', Budgets);
+console.log('Transaction model:', Transaction);
+console.log('Vault model:', Vault);
+console.log('Bills model:', Bills);
+console.log('Category model:', Category);
+
 // // Define associations
 // Budjets.hasMany(Transaction, { 
 //     foreignKey: 'budjet_id',

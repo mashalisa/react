@@ -65,12 +65,21 @@ const deleteUser = async (id) => {
     await user.destroy();
 };
 
+const getCurrentUser = async (userData) => {
+    const user = await User.findByPk(userData.id);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    return user;
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getCurrentUser
 };
 
 

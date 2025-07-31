@@ -7,6 +7,9 @@ import { login } from "../../config/api/ManageAPIAuth"
 import { AuthContext } from '../../contexts/AuthContext'
 import { useLocation } from "wouter";
 import { Eye, EyeOff } from 'lucide-react';
+import useLoader from '../../hooks/useLoader';
+import Loader from '../basic/Loader';
+
 
 
 
@@ -17,15 +20,18 @@ const [form, setForm] = useState({'email': "", "password": ''})
 const [error, setError] = useState(false)
 const [showPassword, setShowPassword] = useState(false);
 
+const { loading, dispatch, startLoading, stopLoading } = useLoader();
+
 
 const handleClickLogin = async (e) => {
 
   e.preventDefault();
-   
+  dispatch(startLoading());
       try {
           const data = await login(form, 'login');
           console.log(data, 'data in buttonSubmit')
           if(data.success){
+            localStorage.setItem('authToken', data.data.token);
               console.log(data.data.user, 'data.data.user in buttonSubmit')
               setUser(data.data.user);
               navigate("/");
@@ -35,6 +41,8 @@ const handleClickLogin = async (e) => {
           }
       } catch (error) {
           setError(error.message);
+      } finally {
+        dispatch(stopLoading());
       }
       return;
   
@@ -46,9 +54,11 @@ const handleClickLogin = async (e) => {
   }
 
      return (
-    
-    <div className="right flex-between">
-      <div className="form-container border-radius">
+    <>
+    {/* {loading && <Loader />} */}
+ 
+     <div className="right flex-between">
+      <div className="form-container border-radius" style={{position: 'relative'}}>
         <h1 className="title-font">Login</h1>
         <form >
         <InputField name = "email" type = "email" label_name="email"
@@ -62,6 +72,7 @@ const handleClickLogin = async (e) => {
         />
         
           <ButtonSubmit   className="brn-primary" name="Login" onClick={handleClickLogin}/>
+          {loading && <Loader />}
          {error && <p className="error-message" role="alert">{error}</p>}
         </form>
        
@@ -73,6 +84,8 @@ const handleClickLogin = async (e) => {
         />
      </div>
     </div>
+    </>
+   
   
   )
 }

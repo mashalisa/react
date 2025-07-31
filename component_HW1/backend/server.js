@@ -11,6 +11,7 @@ const transactionsRoutes = require('./routers/transactionsRoutes');
 const potsRoutes = require('./routers/potRouters');
 const billsRoutes = require('./routers/billsRouters');
 const categoryRoutes = require('./routers/categoryRouters');
+const homepageRoutes = require('./routers/homepage');
 const app = express();
 
 // CORS configuration to allow all origins
@@ -21,9 +22,13 @@ app.use(cors({
 }));
 
 // Import models from index.js
-const { User, Budgets, Transaction, Vault } = require('./DB/models');
+const { User, Budgets, Transaction, Vault, Bills, Category } = require('./DB/models');
 
 console.log('Budgets model:', Budgets);
+console.log('All models loaded:', { User, Budgets, Transaction, Vault, Bills, Category });
+console.log('Budgets model type:', typeof Budgets);
+console.log('Budgets model name:', Budgets?.name);
+console.log('Budgets tableName:', Budgets?.tableName);
 
 // Middleware for parsing JSON bodies
 app.use(express.json());
@@ -47,6 +52,7 @@ app.use('/api/bills', billsRoutes);
 app.use('/api/categories', categoryRoutes);
 // Swagger UI setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use('/', homepageRoutes);
 
 // ✅ Import sequelize from DB models (includes associations!)
 // const { sequelize } = require('./DB/models');
@@ -67,11 +73,12 @@ const syncDatabase = async () => {
         // First, disable foreign key checks
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
 
-        // Ensure all models are loaded
-        const { User, Budgets, Transaction, Vault } = require('./DB/models');
+        // Models are already loaded from the top of the file
 
         // Sync with alter: true to modify existing tables
+        console.log('Starting database sync...');
         await sequelize.sync({ alter: true });
+        console.log('Database sync completed');
         // await sequelize.sync({ force: true });
 
         // Re-enable foreign key checks

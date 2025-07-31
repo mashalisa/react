@@ -81,6 +81,7 @@ const sortingTransactions = async (transactionFiltered) => {
   }
 }
    useEffect(() => {
+    console.log(categories, 'categories in useEffect')
     if (transactionFiltered && transactionFiltered.trim() !== '') {
       sortingTransactions(transactionFiltered)
       console.log(transactions, 'transactions in useEffect')

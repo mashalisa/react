@@ -1,4 +1,6 @@
-import { lazy, Suspense } from 'react'; //useState is a React Hook that lets you add a state variable to your component.
+import React, { lazy, Suspense } from 'react'; //useState is a React Hook that lets you add a state variable to your component.
+import useLoader from './hooks/useLoader';
+import Loader from './components/basic/Loader';
 //State: A Component's Memory
 //It stores dynamic data — things that can change while the app is running.
 // Components need to "remember" things like the current input value
@@ -6,58 +8,80 @@ import { lazy, Suspense } from 'react'; //useState is a React Hook that lets you
 
 import './App.css'
 import SideBar from './components/sidebar/NavBar';
-const Overview = lazy(() => import('./components/pages/Overview'));
-const RecurringBills = lazy(() => import('./components/pages/RecurringBills'));
-const Transactions = lazy(() => import('./components/pages/Transactions'));
-const Budgets = lazy(() => import('./components/pages/Budgets'));
-const Pots = lazy(() => import('./components/pages/Pots'));
+
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import AuthImage from './components/auth/AuthImage';
-import { Route, useLocation } from "wouter";
+import { Route, useLocation, Switch  } from "wouter";
 import { AuthContext } from './contexts/AuthContext';
 import { useEffect, useContext } from 'react';
 import Header from './components/layout/Header';
 import './components/auth/Auth.css';
 import useMenu from './hooks/useMenu';
 import SideBarMobile from './components/sidebar/SidebarMobile';
+import axiosToken from './utils/axiosToken';
+import { menu } from './components/pages/Menu';
 function App() {
   const { menuMobile } = useMenu();
-  const menu = [
-    { id: 'page1', label: 'overview', path: '/', component: Overview, isButtonExists: false, svg_path: './img/icons/overview.svg' },
-    { id: 'page2', label: 'transactions', path: '/transactions', component: Transactions, isButtonExists: false, svg_path: './img/icons/transaction.svg' },
-    { id: 'page3', label: 'budgets', path: '/budgets', component: Budgets, isButtonExists: true, svg_path: './img/icons/budgets.svg' },
-    { id: 'page4', label: 'pots', path: '/pots', component: Pots, isButtonExists: true, svg_path: './img/icons/pots.svg' },
-    { id: 'page5', label: 'recurring bills', path: '/recurring-bills', component: RecurringBills, isButtonExists: false, svg_path: './img/icons/bills.svg' }
-  ];
+  const { loading, dispatch, startLoading, stopLoading } = useLoader();
+ 
 
-  const {user}  = useContext(AuthContext)
+  const {user, setUser}  = useContext(AuthContext)
   const [_, navigate] = useLocation()
   console.log(user, 'user in App')
+  
   useEffect(() => {
-    if(!user){
-      navigate('/Login')
+    const token = localStorage.getItem('authToken');
+    if ( !user && !token) {
+      console.log('no user and no token')
+      navigate('/login')
+      console.log('navigate to Login')
+    }
+    else{
+      navigate('/')
     }
   }, [user])
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token ) {
+      axiosToken.get('/')
+        .then(res => {
+          console.log(res.data.user, 'res.data.user in App')
+          console.log(res.data, 'res.data.user.id in App')
+          setUser(res.data.user); // <-- save the user in context
+        })
+        .catch(err => {
+          console.error('Failed to fetch user', err);
+          setUser(null); // clear user if token invalid
+          localStorage.removeItem('authToken');
+        });
+    }
+  }, []);
 
   if (user ) {
+console.log(user, 'if user in App')
     return (
       <div className="page-container">
         {menuMobile ? <SideBarMobile menu={menu}  /> : <SideBar menu={menu}  />}
-        <div className="main-content">
-          {menu.map((item) => {
+        <div className="main-content" style={{position: 'relative'}}>
+        <Switch>
+        {menu.map((item) => {
             return (
-              <Suspense fallback={<div>Loading...</div>}>
+            
               <Route path={item.path} key={item.id}>
                 <>
                 {/* <Header page={item} /> */}
-                <item.component page={item.label}  />
+                <Suspense fallback={<Loader />}>
+                {React.createElement(item.component, { page: item.label })}
+                </Suspense>
                 </>
               
               </Route>
-              </Suspense>
+             
             );
           })}
+        </Switch>
+         
         </div>
       </div>
     )

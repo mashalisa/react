@@ -28,6 +28,7 @@ export async function login(formData, path)  {
     }
   
     const result = await response.json(); 
+    console.log(result, 'result in login')
           // parse JSON response
     return result; 
   };

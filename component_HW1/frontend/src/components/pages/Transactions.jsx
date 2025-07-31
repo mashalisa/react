@@ -21,11 +21,13 @@ const Transactions = (page) => {
   const {menuMobile} = useMenu()
   const {isMobile} = useMobile()
   const {transactions,  addNewTransaction, searchTransactionsBySenderName, searchTransaction, setSearchTransaction, sortingTransactions, transactionFiltered, setTransactionFiltered, searchCategory, setSearchCategory, filterByCategoryName, getCategoriesData, categories, setCategories} = useTransactions()
+  console.log(categories, 'categories in Transactions first')
   const {user}  = useContext(AuthContext)
+  console.log(user, 'user in Transactions')
 
   const [isLabel, setIsLabel] = useState(false);
   const filterCategories = [{value:'oldest', label:'oldest'}, {value:'latest', label:'latest'}, {value:'highest', label:'highest'}, {value:'lowest', label:'lowest'}, {value:'A to Z', label:'A to Z'}, {value:'Z to A', label:'Z to A'}];
-    const {formData, setFormData, handleInput, handleChange} = useForm({ user_id: user.id });
+    const {formData, setFormData, handleInput, handleChange} = useForm({ user_id: user.id});
     const [currentPage, setCurrentPage] = useState(1);
     const transactionsPerPage = 2;
   
