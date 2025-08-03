@@ -29,9 +29,20 @@ const authService = {
             email,
             password
         });
+  // Generate JWT token
+        const token = jwt.sign(
+            { 
+                id: user.id, 
+                email: user.email,
+                user_name: user.user_name
+            },
+            process.env.JWT_SECRET || 'your-secret-key',
+            { expiresIn: '1h' }
+        );
 
         return { 
             message: 'User registered successfully',
+            token,
             user: {
                 id: user.id,
                 user_name: user.user_name,

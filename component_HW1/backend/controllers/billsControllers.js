@@ -7,7 +7,6 @@ function BillsController() {
                 let result;
                 if (method === 'getAllBillsByUserId') {
                     const { userId } = req.params;
-                    console.log('Controller: Getting bills for user:', userId);
                     if (!userId) {
                         return res.status(400).json({
                             success: false,
@@ -21,9 +20,7 @@ function BillsController() {
                         message: result && result.length > 0 ? 'Bills retrieved successfully' : 'No bills found'
                     });
                 } else if (method === 'addNewBill') {
-                    console.log('Controller: Adding new bill with data:', req.body);
                     result = await billsService[method](req.body);
-                    console.log('Controller: Bill creation result:', result);
                     return res.status(201).json(result);
                 } else {
                     result = await billsService[method]();
